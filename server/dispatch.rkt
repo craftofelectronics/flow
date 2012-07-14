@@ -8,6 +8,7 @@
          (file "store.rkt")
          (file "system.rkt")
          (file "paths.rkt")
+         (file "params.rkt")
          web-server/dispatch 
          web-server/http
          web-server/servlet-env
@@ -49,13 +50,19 @@
    [("list") list-arduinos]
    [("set" (string-arg) (string-arg)) set-data/api]
    [("get" (string-arg)) get-data/api]   
-   [("platform" (string-arg)) set-platform-parameters]
+   [("platform" (string-arg)) read-params/resp]
    ))
 
 (printf "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path))
+(printf "~n===PATHS===~n")
+(show-paths)
+(read-params 'server)
+(show-params)
+
 (serve/servlet dispatch
                #:launch-browser? #f
                #:extra-files-paths (www-path)
+               #:server-root-path (UMBRELLA)
                #:servlet-path "/"
                #:servlet-regexp #rx""
                #:log-file 

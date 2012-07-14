@@ -342,7 +342,7 @@
   (define proc-headers
     (build-procs2 (get-working sjson)))
   
-  (s! (format "#INCLUDE \"ardu-see-ardu-do.module\"~n"))
+  (s! (format "#INCLUDE \"flow.module\"~n"))
   (s! (format "PROC main~a ()\n" (current-seconds)))
   (s! (format "  SEQ~n"))
   ;(s! (format "    serial.start(TX0, ~a)~n" (get-data 'baud)))

@@ -1,10 +1,27 @@
-#hash((arduinouno . #hash((platform . 'arduinouno)
-                          (baud . 115200)
-                          (mcpu . m328p)))
-      
-      (arduino . #hash((platform . 'arduino)
-                       (baud . 57600)
-                       (mcpu . m328p)))
-      
-      )
-      
+#lang racket
+(require (file "paths.rkt")
+         (file "store.rkt"))
+(require web-server/http)
+
+(provide (all-defined-out))
+
+(define (read-params platform)
+  (let ([hash (call-with-input-file
+                  (config-file platform)
+                (λ (inp) (read inp)))])
+
+    (hash-for-each
+     hash (λ (k v)
+            (set-data! k v)))
+    ))
+
+(define (show-params)
+  (for-each (λ (k)
+              (printf "~a [~a]~n" k (get-data k)))
+            (get-keys)))
+  
+(define (read-params/resp req platform)
+  (read-params platform)
+  (show-params)
+  (response/xexpr 
+   `(p ,(format "~a" (current-seconds)))))

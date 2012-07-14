@@ -56,7 +56,7 @@
           (build-bin-path prog)
           (render (parse flags))))
 
-(define (exe cmd)
+#;(define (exe cmd)
   (let-values ([(from-stdout
                  to-stdin
                  process-id
@@ -71,6 +71,9 @@
          (close-output-port to-stdin)]
         [else (loop (status-fun 'status))])
       )))
+
+(define (exe cmd)
+  (system cmd))
 
 (define (compile-cmd fname)
   (system-call
@@ -94,6 +97,9 @@
   (fprintf op "~a~n" xformed)
   (close-output-port op))
 
+(define (report banner cmd)
+  (printf "~n====~n~a~n====~n" banner)
+  (printf "~a~n" cmd))
 
 (define (compile-occam-file)
   (define isearch (apply string-append 
@@ -102,21 +108,23 @@
                           ":")))
   (define cmd (compile-cmd (occ-file)))
   
-  (set! cmd (format "export ISEARCH=~a ; ~a" isearch cmd))
-  (set! cmd (format "cd ~a ; ~a"
-                    (UMBRELLA)
-                    cmd))
-  (printf "~n===COMPILE===~n~a~n===~n" cmd)
+  ;(set! cmd (format "export ISEARCH=~a ; ~a" isearch cmd))
+  
+  (putenv "ISEARCH" isearch)
+  (report "ISEARCH" (getenv "ISEARCH"))
+  (current-directory (temp-path))
+  (report 'COMPILE cmd)
   (exe cmd))
 
 (define (plinker-cmd)
   (system-call
-   'plinker
+   'plinker.pl
    `(-s -o ,(tbc-file)
         ,(->string (occam-lib-path 'forall))
         ,(tce-file))))
 
 (define (plink)
+  (report 'PLINK (plinker-cmd))
   (exe (plinker-cmd)))
 
 (define (bin2hex-cmd)
@@ -125,6 +133,7 @@
    `(0x4F00 ,(tbc-file) ,(hex-file))))
 
 (define (bin2hex)
+  (report 'BINARY-TO-IHEX (bin2hex-cmd))
   (exe (bin2hex-cmd)))
 
 (define-syntax (when-file stx)
@@ -164,9 +173,9 @@
         ,(format "flash:w:~a" (hex-file)))))
 
 (define (avrdude)
-  (define ARDUINO-PORT (get-data 'arduino-port))
+  (define ARDUINO-PORT (get-data 'port))
   (define cmd (avrdude-cmd ARDUINO-PORT))
-  (printf "~n===~nAVRDUDE~n===~n\tport[~a]~n\tcmd: ~a~n" ARDUINO-PORT cmd)
+  (report 'AVRDUDE cmd)
   (when ARDUINO-PORT
     (exe cmd)))
 

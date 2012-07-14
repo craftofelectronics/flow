@@ -15,7 +15,9 @@
 ;; list-arduinos
 (define (make-set-url dev)
   (define the-device (path->string dev))
-  `(li (a ((href ,(format "~a/set/~a/~a" BASE-URL 'arduino-port the-device)))
+  `(li (a ((href ,(format "~a/set/~a/~a" (format (get-data 'base-url) 
+                                                 (get-data 'server-port))
+                          'port the-device)))
           ,the-device)))
 
 (define (list-arduinos req)

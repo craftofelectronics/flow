@@ -26,10 +26,10 @@
       (p ,(hash-ref data (->sym key) (λ () "Oops")))))))
 
 (define (set-data! key value)
-  (hash-set! data key value))
+  (hash-set! data (->sym key) value))
 
 (define (get-data key)
-  (hash-ref data key (λ () false)))
+  (hash-ref data (->sym key) (λ () false)))
 
 (define (get-keys)
   (hash-keys data))

@@ -15,7 +15,13 @@
 ;; a full path to it in the appropriate system's
 ;; bin directory.
 (define (build-bin-path program)
-  (build-path (UMBRELLA) "bin" (format "~a" (system-type)) program))
+  (build-path (UMBRELLA) "bin" (format "~a" (system-type)) (format "~a" program)))
+
+(define (config-file platform)
+  (build-path (UMBRELLA) "config" (format "~a.rkt" platform)))
+
+(define (config-file-path)
+  (build-path (UMBRELLA) "config"))
 
 ;; occam-lib-path :: string -> path
 ;; Builds a path to an occam library
@@ -25,7 +31,8 @@
 (define temp-file-base "FLOW")
 (define (build-temp-file extension)
   (build-path
-   (find-system-path 'temp-dir)
+   (UMBRELLA)
+   "temp"
    (format "~a.~a" 
            temp-file-base
            extension)))
@@ -56,4 +63,26 @@
 (define (app-log) (build-path (UMBRELLA) (format "~a.log" temp-file-base)))
 
 (define (avrdude-conf-file)
-  (build-path (UMBRELLA) "conf" "avrdude.conf"))
+  (build-path (config-file-path) "avrdude.conf"))
+
+(define (temp-path)
+  (build-path (UMBRELLA) "temp"))
+
+(define (show-paths)
+  (for-each
+   (λ (s)
+     (printf "~a~n" s))
+   (list 
+    (UMBRELLA)
+    (occam-lib-path 'forall)
+    (build-temp-file 'temp)
+    (isearch-list)
+    (json-file)
+    (occ-file)
+    (tce-file)
+    (tbc-file)
+    (hex-file)
+    (hex-file)
+    (app-log)
+    (temp-path)
+    (avrdude-conf-file))))
