@@ -12,5 +12,3 @@
 
 (define KEY:ARDUINO "arduino")
 
-(define (->string o)
-  (format "~a" o))

@@ -1,6 +1,6 @@
 #lang racket
 
-(provide HERE
+(provide UMBRELLA
          temp-file-base
          json-file
          occ-file
@@ -8,46 +8,60 @@
          tbc-file
          hex-file
          app-log
-         bin-path
+         build-bin-path
          SEP
          conf-file)
 
 ;; Each library function is prefixed by the module it came from.
 (require racket/runtime-path)
 ;; (define-runtime-path HERE ".")
-(define (HERE) 
-  (build-path 
-   (find-system-path 'run-file) 'up))
+(define (UMBRELLA) 
+  (simplify-path
+   (build-path 
+    (find-system-path 'run-file) 'up 'up)))
 
 (define temp-file-base "ARDU")
 
+(define (build-bin-path program)
+  (build-path (UMBRELLA) "bin" (format "~a" (system-type)) program))
+
 (define (json-file) 
-  (build-path (HERE)
+  (build-path (UMBRELLA)
               (format "~a.json" temp-file-base)))
 
+
+(define (isearch-list)
+  (map (λ (p)
+         (build-path (UMBRELLA) p))
+       (list 
+        (build-path "occam" "flow")
+        (build-path "occam" "lib")
+        (build-path "occam" "include")
+        (build-path "occam" "include" "arch" "m328p")
+        (build-path "occam" "include" "arch" "common")
+        (build-path "occam" "include" "platforms" "arduino"))))
+
 (define (occ-file) 
-  (build-path (HERE)
+  (build-path (UMBRELLA)
               (format "~a.occ" temp-file-base)))
 (define (tce-file) 
-  (build-path (HERE)
+  (build-path (UMBRELLA)
               (format "~a.tce" temp-file-base)))
 (define (tbc-file) 
-  (build-path (HERE)
+  (build-path (UMBRELLA)
               (format "~a.tbc" temp-file-base)))
 (define (hex-file) 
-  (build-path (HERE)
+  (build-path (UMBRELLA)
               (format "~a.hex" temp-file-base)))
 
 (define (app-log)
-  (build-path (HERE) 
+  (build-path (UMBRELLA) 
               (format "~a.log" temp-file-base)))
 
-(define (bin-path)
-  (build-path (HERE)
-              "tvm" (format "~a" (system-type)) "bin"))
+
 
 (define (conf-file)
-  (build-path (HERE) 
+  (build-path (UMBRELLA) 
               "tvm" "common" "conf" "avrdude.conf"))
 
 (define (SEP)

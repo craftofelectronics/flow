@@ -56,13 +56,6 @@
     [flag/value
      (arg1 flag/value)]))
 
-(define (list-intersperse ls o)
-  (cond
-    [(empty? (rest ls)) ls]
-    [else
-     (cons (first ls)
-           (cons o 
-                 (list-intersperse (rest ls) o)))]))
 
 (define (render ast)
   (match ast
@@ -78,47 +71,16 @@
     [(struct arg1 (flag/value))
      (format "~a" flag/value)]))
 
-
-
-(define (show-json req json)
-  (define log-op (open-output-file 
-                  (build-path (HERE) "my.log") #:exists 'append))
-  (fprintf log-op "~a~n" (current-seconds))
-  (fprintf log-op "~a~n" json)
-  (fprintf log-op "~n~a~n" (request-post-data/raw req))
-  (close-output-port log-op)
-  (response/xexpr 
-   `(p ,(format "~a" (current-seconds)))))
-
-(define (isearch-list)
-  (append
-   (list (HERE))
-   (map (λ (p)
-          (build-path (HERE) p))
-        (list 
-         (build-path "tvm" "common" "lib")
-         (build-path "tvm" "common" "include")
-         (build-path "tvm" "common" "include" "arch" "m328p")
-         (build-path "tvm" "common" "include" "arch" "common")
-         (build-path "tvm" "common" "include" "platforms" "arduino")))))
-
-(define (read-cmd baud serial-port)
-  (render
-   (parse
-     `(read_arduino (-b ,baud) ,serial-port))))
-
 (define (compile-cmd fname)
-  (format "~a~a~a"
-          (bin-path)
-          (SEP)
-          (render
-           (parse
-             `(occ21 
-               -t2 -V -etc -w -y -znd -znec 
-               -udo -zncc -init -xin -mobiles 
-               -zrpe -zcxdiv -zcxrem -zep -b -tle 
-               -DEF (= F.CPU 16000000) 
-               -DEF OCCBUILD.TVM ,fname)))))
+  (build-bin-path
+   'occ21
+   (render
+    (parse
+      `(-t2 -V -etc -w -y -znd -znec 
+        -udo -zncc -init -xin -mobiles 
+        -zrpe -zcxdiv -zcxrem -zep -b -tle 
+        -DEF (= F.CPU 16000000) 
+        -DEF OCCBUILD.TVM ,fname)))))
 
 (define (json->occ-cmd fname)
   (format "~a~a~a"
