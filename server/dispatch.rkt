@@ -1,4 +1,5 @@
 #lang racket
+(provide serve)
 
 ;; Server modules
 ;; Functionality for the server is broken down into modules
@@ -53,19 +54,21 @@
    [("platform" (string-arg)) read-params/resp]
    ))
 
-(printf "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path))
-(printf "~n===PATHS===~n")
-(show-paths)
-(read-params 'server)
-(show-params)
 
-(serve/servlet dispatch
-               #:launch-browser? #f
-               #:extra-files-paths (www-path)
-               #:server-root-path (UMBRELLA)
-               #:servlet-path "/"
-               #:servlet-regexp #rx""
-               #:log-file 
-               (format "/tmp/its-~a.log" 
-                       (current-seconds)))
+(define (serve)
+  (printf "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path))
+  (printf "~n===PATHS===~n")
+  (show-paths)
+  (read-params 'server)
+  (show-params)
+  
+  (serve/servlet dispatch
+                 #:launch-browser? #f
+                 #:extra-files-paths (www-path)
+                 #:server-root-path (UMBRELLA)
+                 #:servlet-path "/"
+                 #:servlet-regexp #rx""
+                 #:log-file 
+                 (format "/tmp/its-~a.log" 
+                         (current-seconds))))
 

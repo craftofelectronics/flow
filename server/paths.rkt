@@ -17,11 +17,11 @@
 (define (build-bin-path program)
   (build-path (UMBRELLA) "bin" (format "~a" (system-type)) (format "~a" program)))
 
-(define (config-file platform)
-  (build-path (UMBRELLA) "config" (format "~a.rkt" platform)))
-
 (define (config-file-path)
   (build-path (UMBRELLA) "config"))
+
+(define (config-file platform)
+  (build-path (config-file-path) (format "~a.rkt" platform)))
 
 ;; occam-lib-path :: string -> path
 ;; Builds a path to an occam library
