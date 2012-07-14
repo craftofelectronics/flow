@@ -5,6 +5,7 @@
          (prefix-in srfi1: srfi/1))
 (require racket/cmdline)
 (require (file "base.rkt")
+         (file "util.rkt")
          (file "store.rkt"))
 (provide json->occ)
 
@@ -92,22 +93,6 @@
            (make-wire-name moduleId (rest wires)))]
     [else
      (make-wire-name moduleId (rest wires))]))
-
-(define (symbol<? a b)
-  (string<? (symbol->string a)
-            (symbol->string b)))
-
-(define (list-intersperse ls o)
-  (cond
-    [(empty? (rest ls)) ls]
-    [else
-     (cons (first ls)
-           (cons o
-                 (list-intersperse (rest ls) o)))]))
-
-(define (snoc ls o)
-  (reverse (cons o (reverse ls))))
-
 
 (define build-procs 
   (λ (working)

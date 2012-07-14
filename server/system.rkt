@@ -1,33 +1,13 @@
 #lang racket
 (require racket/system
+         (file "util.rkt")
          (file "base.rkt")
          (file "paths.rkt")
          (file "jsonconv.rkt")
          (file "store.rkt"))
 
+(provide run)
 
-(require web-server/http)
-
-
-(provide run set-platform-parameters)
-
-;; FIXME
-;; This should all be read from a conf file.
-(define (set-platform-parameters req platform)
-  (case (string->symbol platform)
-    [(uno arduinouno)
-     (set-data! 'platform 'uno)
-     (set-data! 'baud 115200)
-     (set-data! 'mcpu 'm328p)
-     ]
-    [else ; arduino
-     (set-data! 'platform 'arduino)
-     (set-data! 'baud 57600)
-     (set-data! 'mcpu 'm328p)]
-    )
-  (response/xexpr 
-   `(p ,(format "Set parameters at time ~a" (current-seconds))))
-  )
 
 ;; RUNNING COMMANDS
 ;; We'll define commands as S-expressions. The language
@@ -71,39 +51,10 @@
     [(struct arg1 (flag/value))
      (format "~a" flag/value)]))
 
-(define (compile-cmd fname)
-  (build-bin-path
-   'occ21
-   (render
-    (parse
-      `(-t2 -V -etc -w -y -znd -znec 
-        -udo -zncc -init -xin -mobiles 
-        -zrpe -zcxdiv -zcxrem -zep -b -tle 
-        -DEF (= F.CPU 16000000) 
-        -DEF OCCBUILD.TVM ,fname)))))
-
-(define (json->occ-cmd fname)
-  (format "~a~a~a"
-          (bin-path)
-          (SEP)
-          (render
-           (parse 
-             `(jsonconv ,fname)))))
-
-
-(define (save-json-file json)
-  (define op (open-output-file (json-file) #:exists 'replace))
-  (fprintf op json)
-  (newline op)
-  (close-output-port op)
-  (json-file))
-
-(define (transform-json-file)
-  (define op (open-output-file (occ-file) #:exists 'replace))
-  (define xformed (json->occ (file->string (json-file))))
-  (fprintf op "~a~n" xformed)
-  (close-output-port op)
-  (printf "~n===~n~a~n===~n" xformed))
+(define (system-call prog flags)
+  (format "~a ~a"
+          (build-bin-path prog)
+          (render (parse flags))))
 
 (define (exe cmd)
   (let-values ([(from-stdout
@@ -121,6 +72,29 @@
         [else (loop (status-fun 'status))])
       )))
 
+(define (compile-cmd fname)
+  (system-call
+  'occ21
+  `(-t2 -V -etc -w -y -znd -znec 
+        -udo -zncc -init -xin -mobiles 
+        -zrpe -zcxdiv -zcxrem -zep -b -tle 
+        -DEF (= F.CPU 16000000) 
+        -DEF OCCBUILD.TVM ,fname)))
+
+(define (save-json-file json)
+  (define op (open-output-file (json-file) #:exists 'replace))
+  (fprintf op json)
+  (newline op)
+  (close-output-port op)
+  (json-file))
+
+(define (transform-json-file)
+  (define op (open-output-file (occ-file) #:exists 'replace))
+  (define xformed (json->occ (file->string (json-file))))
+  (fprintf op "~a~n" xformed)
+  (close-output-port op))
+
+
 (define (compile-occam-file)
   (define isearch (apply string-append 
                          (list-intersperse 
@@ -130,35 +104,25 @@
   
   (set! cmd (format "export ISEARCH=~a ; ~a" isearch cmd))
   (set! cmd (format "cd ~a ; ~a"
-                    (HERE)
+                    (UMBRELLA)
                     cmd))
-  (printf "COMPILE:~n~a~n" cmd)
+  (printf "~n===COMPILE===~n~a~n===~n" cmd)
   (exe cmd))
 
 (define (plinker-cmd)
-  (format "~a~a~a"
-          (bin-path)
-          (SEP)
-          (render
-           (parse 
-             `(plinker.pl -s 
-                          -o ,(tbc-file)
-                          ,(->string 
-                            (build-path 
-                             (HERE)  "tvm" "common" "lib" "forall.lib"))
-                          ,(tce-file))))))
-
+  (system-call
+   'plinker
+   `(-s -o ,(tbc-file)
+        ,(->string (occam-lib-path 'forall))
+        ,(tce-file))))
 
 (define (plink)
   (exe (plinker-cmd)))
 
 (define (bin2hex-cmd)
-  (format "~a~a~a"
-          (bin-path)
-          (SEP)
-          (render
-           (parse 
-             `(binary-to-ihex 0x4F00 ,(tbc-file) ,(hex-file))))))
+  (system-call
+   'binary-to-ihex
+   `(0x4F00 ,(tbc-file) ,(hex-file))))
 
 (define (bin2hex)
   (exe (bin2hex-cmd)))
@@ -185,40 +149,24 @@
       [(windows) "FIXME"]))
   PORT)
 
-(define (reset-cmd serial-port)
-  (render
-   (parse
-     `(reset-arduino ,(build-port serial-port) ,(get-data 'baud)))))
-
-(define (reset-arduino)
-  (define ARDUINO-PORT (get-data 'arduino-port))
-  (define cmd (format "~a~a~a" 
-                      (bin-path)
-                      (SEP)
-                      (reset-cmd ARDUINO-PORT)))
-  (printf "RESET: ~a~n" cmd)
-  (when ARDUINO-PORT
-    (exe cmd)))
-
+;; FIXME
+;; There needs to be more parameterization here.
 (define (avrdude-cmd sp)
-  (format "~a~a~a"
-          (bin-path)
-          (SEP)
-          (render
-           (parse 
-             `(avrdude -C ,(->string (conf-file))
-                       -V -F 
-                       (-p ,(get-data 'mcpu)) ;FIXME
-                       (-b ,(get-data 'baud))
-                       (-c arduino)
-                       (-P ,(build-port sp))
-                       -D -U 
-                       ,(format "flash:w:~a" (hex-file)))))))
+  (system-call
+   'avrdude
+   `(-C ,(->string (avrdude-conf-file))
+        -V -F 
+        (-p ,(get-data 'mcpu))
+        (-b ,(get-data 'baud))
+        (-c arduino)
+        (-P ,(build-port sp))
+        -D -U 
+        ,(format "flash:w:~a" (hex-file)))))
 
 (define (avrdude)
   (define ARDUINO-PORT (get-data 'arduino-port))
   (define cmd (avrdude-cmd ARDUINO-PORT))
-  (printf "AVRDUDE~n\tport[~a]~n\tcmd: ~a~n" ARDUINO-PORT cmd)
+  (printf "~n===~nAVRDUDE~n===~n\tport[~a]~n\tcmd: ~a~n" ARDUINO-PORT cmd)
   (when ARDUINO-PORT
     (exe cmd)))
 

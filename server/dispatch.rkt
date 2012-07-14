@@ -3,49 +3,35 @@
 ;; Server modules
 ;; Functionality for the server is broken down into modules
 ;; handling one or more endpoints in the dispatcher.
-(require 
- (file "arduino.rkt")
- (file "store.rkt")
- (file "system.rkt")
- (file "paths.rkt"))
+(require (file "util.rkt")
+         (file "arduino.rkt")
+         (file "store.rkt")
+         (file "system.rkt")
+         (file "paths.rkt")
+         web-server/dispatch 
+         web-server/http
+         web-server/servlet-env
+         )
+
+; FIXME
+;; This should all be read from a conf file.
+(define (set-platform-parameters req platform)
+  (case (string->symbol platform)
+    [(uno arduinouno)
+     (set-data! 'platform 'uno)
+     (set-data! 'baud 115200)
+     (set-data! 'mcpu 'm328p)
+     ]
+    [else ; arduino
+     (set-data! 'platform 'arduino)
+     (set-data! 'baud 57600)
+     (set-data! 'mcpu 'm328p)]
+    )
+  (response/xexpr 
+   `(p ,(format "Set parameters at time ~a" (current-seconds))))
+  )
 
 
-;; Takes a list of functions, and makes sure that
-;; we can do everything along the way, returning the result of
-;; the last function. There is almost certainly a more elegant,
-;; Schemely way to do this.
-(define check-pathway
-  (λ funs
-    (λ (req)
-      (cond
-        [(empty? (rest funs))
-         ((first funs) req)]
-        [else
-         (if ((first funs) req)
-             ((apply check-pathway (rest funs)) req)
-             (response/xexpr
-              `(p "No.")))]))))
-
-(require web-server/dispatch
-         web-server/dispatchers/dispatch)
-(define-values (dispatch blog-url)
-  (dispatch-rules
-   [("run" (string-arg)) log-and-run]
-   ;; Handled by arduino.rkt
-   [("list") list-arduinos]
-   ;; Handled by store.rkt
-   [("set" (string-arg) (string-arg)) set-data/api]
-   [("get" (string-arg)) get-data/api]
-   
-   [("platform" (string-arg)) set-platform-parameters]
-   ))
-
-;; dispatch-rules patterns cover the entire URL, not just the prefix,
-;; so your serve-static only matches "/" not anything with that as a
-;; prefix. Also, (next-dispatcher) is the default 'else' rule, so it's
-;; not necessary.
-
-(require web-server/http)
 
 (define (log-and-run req http-param)
   (define log-op (open-output-file (app-log) #:exists 'append))
@@ -57,20 +43,19 @@
   (response/xexpr 
    `(p ,(format "~a" (current-seconds)))))
 
-;; (current-directory) is the directory that you start the server
-;; from, not the directory where the server's source file is
-;; located. The best way to get that is with define-runtime-path
+(define-values (dispatch blog-url)
+  (dispatch-rules
+   [("run" (string-arg)) log-and-run]
+   [("list") list-arduinos]
+   [("set" (string-arg) (string-arg)) set-data/api]
+   [("get" (string-arg)) get-data/api]   
+   [("platform" (string-arg)) set-platform-parameters]
+   ))
 
-(define extra-files
-  (list
-   (simplify-path (build-path (HERE) "htdocs"))))
-   
-(printf "Serving from ~a~n" extra-files)
-
-(require web-server/servlet-env)
+(printf "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path))
 (serve/servlet dispatch
                #:launch-browser? #f
-               #:extra-files-paths extra-files
+               #:extra-files-paths (www-path)
                #:servlet-path "/"
                #:servlet-regexp #rx""
                #:log-file 
