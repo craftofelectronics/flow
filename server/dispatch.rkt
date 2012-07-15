@@ -56,14 +56,15 @@
 
 
 (define (serve)
-  (printf "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path))
-  (printf "~n===PATHS===~n")
+  (debug (format "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path)))
+  (debug (format "~n===PATHS===~n"))
   (show-paths)
   (read-params 'server)
+  (debug "~nPARAMS~n")
   (show-params)
   
   (serve/servlet dispatch
-                 #:launch-browser? #f
+                 #:launch-browser? #t
                  #:extra-files-paths (www-path)
                  #:server-root-path (UMBRELLA)
                  #:servlet-path "/"

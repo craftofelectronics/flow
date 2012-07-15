@@ -1,5 +1,6 @@
 #lang racket
 
+(require (file "util.rkt"))
 (provide (all-defined-out))
 
 ;; Each library function is prefixed by the module it came from.
@@ -71,7 +72,7 @@
 (define (show-paths)
   (for-each
    (λ (s)
-     (printf "~a~n" s))
+     (debug (format "~a~n" s)))
    (list 
     (UMBRELLA)
     (occam-lib-path 'forall)

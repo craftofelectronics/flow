@@ -1,6 +1,8 @@
 #lang racket
 (require (file "paths.rkt")
-         (file "store.rkt"))
+         (file "store.rkt")
+         (file "util.rkt"))
+
 (require web-server/http)
 
 (provide (all-defined-out))
@@ -17,7 +19,7 @@
 
 (define (show-params)
   (for-each (λ (k)
-              (printf "~a [~a]~n" k (get-data k)))
+              (debug (format "~a [~a]~n" k (get-data k))))
             (get-keys)))
   
 (define (read-params/resp req platform)

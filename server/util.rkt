@@ -1,6 +1,7 @@
 #lang racket
 
-(provide (all-defined-out))
+(provide 
+ (all-defined-out))
 
 ;; CONTRACT :: (list-of any) any -> (list-of any)
 ;; Intersperses the object 'o' throughout the list.
@@ -24,3 +25,7 @@
  
 (define (snoc ls o)
   (reverse (cons o (reverse ls))))
+
+(define debug
+  (λ (str)
+    (fprintf (current-error-port) str)))

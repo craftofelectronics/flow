@@ -98,8 +98,8 @@
   (close-output-port op))
 
 (define (report banner cmd)
-  (printf "~n====~n~a~n====~n" banner)
-  (printf "~a~n" cmd))
+  (debug (format "~n====~n~a~n====~n" banner))
+  (debug (format "~a~n" cmd)))
 
 (define (compile-occam-file)
   (define isearch (apply string-append 
