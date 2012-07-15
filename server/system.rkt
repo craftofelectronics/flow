@@ -6,7 +6,7 @@
          (file "jsonconv.rkt")
          (file "store.rkt"))
 
-(provide run)
+(provide run install-firmware)
 
 
 ;; RUNNING COMMANDS
@@ -159,7 +159,9 @@
   PORT)
 
 ;; FIXME
+
 ;; There needs to be more parameterization here.
+#|
 (define (avrdude-cmd sp)
   (system-call
    'avrdude
@@ -171,10 +173,23 @@
         (-P ,(build-port sp))
         -D -U 
         ,(format "flash:w:~a" (hex-file)))))
+|#
+
+(define (avrdude-cmd sp file)
+  (system-call
+   'avrdude
+   `(-C ,(->string (avrdude-conf-file))
+        -V -F 
+        (-p ,(get-data 'mcpu))
+        (-b ,(get-data 'baud))
+        (-c arduino)
+        (-P ,(build-port sp))
+        -D -U 
+        ,(format "flash:w:~a" file))))
 
 (define (avrdude)
   (define ARDUINO-PORT (get-data 'port))
-  (define cmd (avrdude-cmd ARDUINO-PORT))
+  (define cmd (avrdude-cmd ARDUINO-PORT (hex-file)))
   (report 'AVRDUDE cmd)
   (when ARDUINO-PORT
     (exe cmd)))
@@ -202,3 +217,13 @@
   )
 
 
+(define (get-firmware-path platform)
+  (build-path (firmware-path) (get-data 'firmware)))
+     
+
+(define (install-firmware)
+  (let ([path (get-firmware-path (get-data 'platform))])
+    (define ARDUINO-PORT (get-data 'port))
+    (define cmd (avrdude-cmd ARDUINO-PORT (->string path)))
+    (report 'FIRMWARE cmd)
+    (exe cmd)))

@@ -21,6 +21,9 @@
 (define (config-file-path)
   (build-path (UMBRELLA) "config"))
 
+(define (firmware-path)
+  (build-path (UMBRELLA) "occam" "firmware"))
+
 (define (config-file platform)
   (build-path (config-file-path) (format "~a.rkt" platform)))
 
