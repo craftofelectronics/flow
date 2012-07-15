@@ -21,12 +21,18 @@
           ,the-device)))
 
 (define (list-arduinos-raw)
-  (define devices
-    (filter (λ (str)
-              (and (regexp-match "tty" str)
-                   (regexp-match "usb" str)))
-            (directory-list "/dev")))
- devices)
+  (case (system-type)
+    [(macosx)
+     (filter (λ (str)
+               (and (regexp-match "tty" str)
+                    (regexp-match "usb" str)))
+             (directory-list "/dev"))]
+    [(unix)
+     (filter (λ (str)
+               (or (regexp-match "USB[0-9]+" str)
+                   (regexp-match "ACM[0-9]+" str)))
+             (directory-list "/dev"))]
+    [(win) (list "NO ARDUINO")]))
 
 (define (list-arduinos req)
   (define devices (list-arduinos-raw))

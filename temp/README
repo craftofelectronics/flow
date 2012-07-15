@@ -1,0 +1,5 @@
+This directory needs to be present for the server to function.
+
+It is easiest to include it in the repository, until such time
+as I feel compelled to create it programmatically within
+the server app.
