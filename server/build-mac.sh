@@ -1,12 +1,26 @@
-rm -rf ./Flow.app/
+DEST=Flow.app/Contents
+rm -rf Flow.app
 
 raco exe --gui -o Flow gui.rkt
-say "Done compiling."
+say -v Victoria "Done compiling."
 
-cp -R ../bin/ ./Flow.app/Contents/bin/
-cp -R ../config/ ./Flow.app/Contents/config/
-cp -R ../interface/ ./Flow.app/Contents/interface/
-cp -R ../occam/ ./Flow.app/Contents/occam/
-mkdir -p ./Flow.app/Contents/temp
+mkdir -p ${DEST}/bin/macosx/
+cp -R ../bin/macosx/ ${DEST}/bin/macosx/
+cp -R ../config/ ${DEST}/config/
+cp -R ../interface/ ${DEST}/interface/
+cp -R ../occam/ ${DEST}/occam/
+mkdir -p ${DEST}/temp
 
-say "Done copying."
+say -v Victoria "Done copying."
+
+if [ -d /tmp/asdfasdfasdfasdfasdf ] ; then
+	hdiutil eject /Volumes/Flow
+	rm -rf Flow.dmg
+	hdiutil create -megabytes 50 -fs HFS+ -volname Flow ./Flow
+	open ./Flow.dmg
+fi
+
+rm -rf Flow.dmg
+../../create-dmg/create-dmg Flow.dmg Flow.app
+
+say -v Victoria "Done making disk image."
