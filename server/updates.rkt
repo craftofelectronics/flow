@@ -29,15 +29,24 @@
   
   (define any-changed? false)
   
+  (define to-update '())
+  (define (push v)
+    (set! to-update (cons v to-update)))
+  
   (for-each (λ (vl vr)
               (debug (format "Comparing local[~a] to remote[~a]~n" (third vl) (third vr)))
-              (when (> (third vr) (third vl))
-                (set! any-changed? true))
-                (fetch-updated-params vr)))
+              (when (< (third vl) (third vr))
+                (debug (format "~a < ~a~n" (third vl) (third vr)))
+                (push vl)))
             versions-local
             versions-remote)
-  (when any-changed?
-    (fetch-updated-params (list "server.rkt" "config" 'NotNeededForFetch)))
+  
+  (when (not (empty? to-update))
+    (fetch-updated-params (list "server.rkt" "config" 'NotNeededForFetch))
+    (for-each (λ (v)
+                (debug (format "Updating [~a]~n" v))
+                (fetch-updated-params v))
+              to-update))
   )
 
 (define (strip-rkt str)
@@ -55,12 +64,12 @@
         get-pure-port (λ (ip) (port->string ip))))
      (debug (format "Writing ~a~n" (first remote)))
      ;(debug new-file)
-     (call-with-output-port
-      (config-file (strip-rkt (first remote)))
-      (λ (op) (fprintf op "~a~n" new-file))
-      #:exists 'replace)
+     (call-with-output-file
+         (config-file (strip-rkt (first remote)))
+       (λ (op) (fprintf op "~a" new-file))
+       #:exists 'replace)
      ]
-  
+    
     [(occam/flow) 
      (define new-file
        (call/input-url
@@ -69,8 +78,10 @@
                              (second remote)
                              (first remote)))
         get-pure-port (λ (ip) (port->string ip))))
-     (debug (format "Fetching ~a~n" (first remote)))
-     (debug new-file)]))
+     (debug (format "Writing ~a~n" (first remote)))
+     (call-with-output-file
+         (build-path (occam-path) (first remote))
+       (λ (op) (fprintf op "~a" new-file))
+       #:exists 'replace)]
+    ))
 
-  
-  

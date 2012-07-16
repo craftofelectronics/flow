@@ -21,6 +21,9 @@
 (define (config-file-path)
   (build-path (UMBRELLA) "config"))
 
+(define (occam-path)
+  (build-path (UMBRELLA) "occam" "flow"))
+
 (define (firmware-path)
   (build-path (UMBRELLA) "occam" "firmware"))
 
