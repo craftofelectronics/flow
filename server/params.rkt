@@ -11,6 +11,13 @@
   (let ([hash (call-with-input-file
                   (config-file platform)
                 (λ (inp) (read inp)))])
+    hash
+    ))
+
+(define (load-params platform)
+  (let ([hash (call-with-input-file
+                  (config-file platform)
+                (λ (inp) (read inp)))])
 
     (hash-for-each
      hash (λ (k v)

@@ -4,7 +4,8 @@
          (file "params.rkt")
          (file "util.rkt")
          (file "store.rkt")
-         (file "system.rkt"))
+         (file "system.rkt")
+         (file "updates.rkt"))
 
 (define f (new frame% [label "Flow"]))
 
@@ -40,7 +41,7 @@
 
 (define (do-setup)
   (let ([ndx (send type get-selection)])
-    (read-params (list-ref (map second types) ndx)))
+    (load-params (list-ref (map second types) ndx)))
   ;; Set the port
   (set-data!
    'port
@@ -85,4 +86,5 @@
                    (exit)))))
 
 
+(check-for-updates)
 (send f show true)
