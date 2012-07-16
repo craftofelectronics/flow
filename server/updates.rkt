@@ -12,8 +12,16 @@
   (define params-local (read-params 'server))
   (define params-remote
     (call/input-url
-     (string->url (format "~a~a" (get-data 'config-url) "versions.rkt"))
-               get-pure-port (λ (ip) (read ip))))
+     (string->url 
+      (format "~a~a" (get-data 'config-url) "versions.rkt"))
+     get-impure-port 
+     (λ (ip) 
+       (let ([str (port->string ip)])
+         (printf "~a~n" str)
+         (call-with-input-string
+          str (λ (ip)
+                (read ip)))))))
+  
   (define versions-local
     (hash-ref params-local 'versions))
   (define versions-remote

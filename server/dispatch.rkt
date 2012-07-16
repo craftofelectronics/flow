@@ -59,7 +59,7 @@
   (debug (format "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path)))
   (debug (format "~n===PATHS===~n"))
   (show-paths)
-  (load-params 'server)
+  ;;(load-params 'server)
   (debug "~nPARAMS~n")
   (show-params)
   

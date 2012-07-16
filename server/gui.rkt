@@ -85,6 +85,6 @@
                      (kill-thread server-thread-id))
                    (exit)))))
 
-
+(load-params 'server)
 (check-for-updates)
 (send f show true)
