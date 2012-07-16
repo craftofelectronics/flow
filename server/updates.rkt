@@ -13,8 +13,8 @@
   (define params-remote
     (call/input-url
      (string->url 
-      (format "~a~a" (get-data 'config-url) "versions.rkt"))
-     get-impure-port 
+      (format "~a~a" (get-data 'config-url) "server.rkt"))
+     get-pure-port 
      (λ (ip) 
        (let ([str (port->string ip)])
          (printf "~a~n" str)
