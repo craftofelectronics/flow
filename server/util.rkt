@@ -3,6 +3,10 @@
 (provide 
  (all-defined-out))
 
+
+(define (->sym v)
+  (string->symbol (format "~a" v)))
+
 ;; CONTRACT :: (list-of any) any -> (list-of any)
 ;; Intersperses the object 'o' throughout the list.
 (define (list-intersperse ls o)

@@ -1,5 +1,6 @@
 #lang racket
 (require web-server/http)
+(require (file "util.rkt"))
 
 (provide set-data/api
          get-data/api
@@ -8,9 +9,6 @@
          get-keys)
 
 (define data (make-hash))
-
-(define (->sym v)
-  (string->symbol (format "~a" v)))
 
 (define (set-data/api req key value)
   (hash-set! data (->sym key) value)

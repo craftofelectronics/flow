@@ -1,12 +1,14 @@
 #hash((module . "flow.module")
       (server-port . 8000)
       (base-url . "http://localhost:8000")
-      (config-url . "https://raw.github.com/craftofelectronics/flow/master/config/")
-      (versions . (("versions.rkt" 100)
-                   ("server.rkt" 100)
-                   ("arduino.rkt" 100)
-                   ("arduinouno.rkt" 100)))
-       
-      (libraries . ("https://raw.github.com/craftofelectronics/flow/master/occam/flow/flow.module"))
+      (remote-url . "https://raw.github.com/craftofelectronics/flow/master")
+      (versions . (("server.rkt"      "config"        99)
+                   ("arduino.rkt"     "config"       100)
+                   ("arduinouno.rkt"  "config"       100)
+                   ("flow.module"     "occam/flow"   100)))
+      (update-paths . (("occam/flow"
+                        "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
+                       ("config"
+                        "https://raw.github.com/craftofelectronics/flow/master/config/")))
       )
         
