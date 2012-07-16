@@ -27,13 +27,21 @@
   (define versions-remote
     (hash-ref params-remote 'versions))
   
+  (define any-changed? false)
+  
   (for-each (λ (vl vr)
               (debug (format "Comparing local[~a] to remote[~a]~n" (third vl) (third vr)))
               (when (> (third vr) (third vl))
+                (set! any-changed? true))
                 (fetch-updated-params vr)))
             versions-local
             versions-remote)
+  (when any-changed?
+    (fetch-updated-params (list "server.rkt" "config" 'NotNeededForFetch)))
   )
+
+(define (strip-rkt str)
+  (regexp-replace ".rkt" str ""))
 
 (define (fetch-updated-params remote)
   (case (->sym (second remote))
@@ -45,10 +53,24 @@
                              (second remote)
                              (first remote)))
         get-pure-port (λ (ip) (port->string ip))))
-     (debug (format "Fetching ~a~n" (first remote)))
-     (debug new-file)]
+     (debug (format "Writing ~a~n" (first remote)))
+     ;(debug new-file)
+     (call-with-output-port
+      (config-file (strip-rkt (first remote)))
+      (λ (op) (fprintf op "~a~n" new-file))
+      #:exists 'replace)
+     ]
   
-    [(occam/flow) '...]))
+    [(occam/flow) 
+     (define new-file
+       (call/input-url
+        (string->url (format "~a/~a/~a"
+                             (get-data 'remote-url) 
+                             (second remote)
+                             (first remote)))
+        get-pure-port (λ (ip) (port->string ip))))
+     (debug (format "Fetching ~a~n" (first remote)))
+     (debug new-file)]))
 
   
   
