@@ -1,9 +1,9 @@
 #lang racket
-(require (file "base.rkt"))
 (require web-server/http
+         (prefix-in srfi1: srfi/1)
+         (file "base.rkt")
          (file "store.rkt")
-         (file "paths.rkt")
-         )
+         (file "paths.rkt"))
 
 (provide list-arduinos
          list-arduinos-raw
@@ -32,7 +32,13 @@
                (or (regexp-match "USB[0-9]+" str)
                    (regexp-match "ACM[0-9]+" str)))
              (directory-list "/dev"))]
-    [(win) (list "NO ARDUINO")]))
+    [(windows win) 
+     (map (λ (n)
+            (let ([path (format "\\\\.\\COM~a" n)])
+              (call-with-input-file path
+                (λ (p) path))))
+          (srfi1:iota (get-data 'max-windows-com-port)))]
+    ))
 
 (define (list-arduinos req)
   (define devices (list-arduinos-raw))

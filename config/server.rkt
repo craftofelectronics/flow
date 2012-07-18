@@ -10,5 +10,6 @@
                         "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
                        ("config"
                         "https://raw.github.com/craftofelectronics/flow/master/config/")))
+      (max-windows-com-port . 15)
       )
         
