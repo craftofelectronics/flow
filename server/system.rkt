@@ -1,5 +1,7 @@
 #lang racket
 (require racket/system
+         mzlib/file
+         setup/path-to-relative
          (file "util.rkt")
          (file "base.rkt")
          (file "paths.rkt")
@@ -22,11 +24,14 @@
 (struct arg2 (flag value) #:transparent)
 (struct arg1 (flag) #:transparent)
 (struct set (param value) #:transparent)
+(struct nospace (flag value) #:transparent)
 
 (define (parse sexp)
   (match sexp
     [`(= ,rand1 ,rand2)
      (set rand1 rand2)]
+    [`(nospace ,flag ,val)
+     (nospace flag val)]
     [`(,command ,args ...)
      (cmd command (map parse args))]
     ;; FIXME: The list of length two is subsumed by
@@ -49,40 +54,37 @@
     [(struct arg2 (flag value))
      (format "~a ~a" flag value)]
     [(struct arg1 (flag/value))
-     (format "~a" flag/value)]))
+     (format "~a" flag/value)]
+    [(struct nospace (flag value))
+     (format "~a~a" flag value)]
+    ))
 
 (define (system-call prog flags)
   (format "~a ~a"
           (build-bin-path prog)
           (render (parse flags))))
 
-#;(define (exe cmd)
-  (let-values ([(from-stdout
-                 to-stdin
-                 process-id
-                 from-stderr
-                 status-fun) (apply values (process cmd))])
-    (let loop ([status (status-fun 'status)])
-      (cond
-        [(or (equal? status 'done-ok)
-             (equal? status 'done-error))
-         (close-input-port from-stdout)
-         (close-input-port from-stderr)
-         (close-output-port to-stdin)]
-        [else (loop (status-fun 'status))])
-      )))
-
 (define (exe cmd)
   (system cmd))
 
 (define (compile-cmd fname)
+  (for-each (λ (p)
+              (debug (format "P: ~a~nR: ~a~n"
+                             p
+                             (path->relative p))))
+            (isearch-list))
+  
   (system-call
   'occ21
-  `(-t2 -V -etc -w -y -znd -znec 
-        -udo -zncc -init -xin -mobiles 
-        -zrpe -zcxdiv -zcxrem -zep -b -tle 
-        -DEF (= F.CPU 16000000) 
-        -DEF OCCBUILD.TVM ,fname)))
+  (append
+   `(-t2 -V -etc -w -y -znd -znec 
+         -udo -zncc -init -xin -mobiles 
+         -zrpe -zcxdiv -zcxrem -zep -b -tle 
+         -DEF (= F.CPU 16000000) -DEF OCCBUILD.TVM)
+   (map (λ (p)
+          `(-L ,(path->relative p)))
+        (isearch-list))
+   `(,(qs fname)))))
 
 (define (save-json-file json)
   (define op (open-output-file (json-file) #:exists 'replace))
@@ -101,11 +103,14 @@
   (debug (format "~n====~n~a~n====~n" banner))
   (debug (format "~a~n" cmd)))
 
+(define (identity o) o)
 (define (compile-occam-file)
   (define isearch (apply string-append 
                          (list-intersperse 
-                          (map ->string (isearch-list))
-                          ":")))
+                          (map qs (map ->string (isearch-list)))
+                          (if (equal? (system-type) 'windows)
+                              ";"
+                              ":"))))
   (define cmd (compile-cmd (occ-file)))
   
   ;(set! cmd (format "export ISEARCH=~a ; ~a" isearch cmd))
@@ -155,7 +160,7 @@
   (define PORT
     (case (system-type)
       [(macosx unix) (format "/dev/~a" sp)]
-      [(windows) "FIXME"]))
+      [(windows) sp]))
   PORT)
 
 ;; FIXME
@@ -185,12 +190,14 @@
         (-c arduino)
         (-P ,(build-port sp))
         -D -U 
-        ,(format "flash:w:~a" file))))
+        ,(format "flash:w:~s" file))))
 
 (define (avrdude)
   (define ARDUINO-PORT (get-data 'port))
-  (define cmd (avrdude-cmd ARDUINO-PORT (hex-file)))
+  (define cmd (avrdude-cmd ARDUINO-PORT 
+                           (path->relative (hex-file))))
   (report 'AVRDUDE cmd)
+  
   (when ARDUINO-PORT
     (exe cmd)))
 
@@ -224,6 +231,10 @@
 (define (install-firmware)
   (let ([path (get-firmware-path (get-data 'platform))])
     (define ARDUINO-PORT (get-data 'port))
-    (define cmd (avrdude-cmd ARDUINO-PORT (->string path)))
+    ;; FIXME: This works on Windows.
+    ;; It solves an absolute path problem that makes AVRDUDE choke.
+    ;; Dunno if it should be on all platforms.
+    (define cmd (avrdude-cmd ARDUINO-PORT (path->relative path)))
+  
     (report 'FIRMWARE cmd)
     (exe cmd)))

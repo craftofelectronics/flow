@@ -2,10 +2,16 @@
 (require (file "dispatch.rkt")
          (file "arduino.rkt")
          (file "params.rkt")
+         (file "paths.rkt")
          (file "util.rkt")
          (file "store.rkt")
          (file "system.rkt")
          (file "updates.rkt"))
+
+;; Need these early.
+(load-params 'server)
+(show-paths)
+(show-relative-paths)
 
 (define MIN-WIDTH 250)
 
@@ -222,6 +228,5 @@
                      (kill-thread server-thread-id))
                    (exit)))))
 
-(load-params 'server)
 (check-for-updates)
 (send f show true)

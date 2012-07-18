@@ -33,11 +33,16 @@
                    (regexp-match "ACM[0-9]+" str)))
              (directory-list "/dev"))]
     [(windows win) 
-     (map (λ (n)
-            (let ([path (format "\\\\.\\COM~a" n)])
-              (call-with-input-file path
-                (λ (p) path))))
-          (srfi1:iota (get-data 'max-windows-com-port)))]
+     (filter 
+      string?
+      (map (λ (n)
+             (let ([path (format "\\\\.\\COM~a" n)])
+               (with-handlers ([exn:fail?
+                               (λ (e) 'Oops)])
+                 (call-with-input-file path
+                   (λ (p) path)))))
+           (srfi1:iota (get-data 'max-windows-com-port))))
+     ]
     ))
 
 (define (list-arduinos req)

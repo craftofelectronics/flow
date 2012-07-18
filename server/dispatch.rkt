@@ -61,6 +61,7 @@
   (show-paths)
   ;;(load-params 'server)
   (debug "~nPARAMS~n")
+  (set-data! 'server-running true)
   (show-params)
   
   (serve/servlet dispatch
@@ -68,8 +69,7 @@
                  #:extra-files-paths (www-path)
                  #:server-root-path (UMBRELLA)
                  #:servlet-path "/"
-                 #:servlet-regexp #rx""
-                 #:log-file 
-                 (format "/tmp/its-~a.log" 
-                         (current-seconds))))
+                 #:servlet-regexp #rx""))
+
+;                 #:log-file (app-log)))
 
