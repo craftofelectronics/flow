@@ -74,12 +74,11 @@
     
   (system-call
   'occ21
-  (append
-   `(-t2 -V -etc -w -y -znd -znec 
+  `(-t2 -V -etc -w -y -znd -znec 
          -udo -zncc -init -xin -mobiles 
          -zrpe -zcxdiv -zcxrem -zep -b -tle 
          -DEF (= F.CPU 16000000) -DEF OCCBUILD.TVM
-         ,(qs fname)))))
+         ,(qs fname))))
 
 (define (save-json-file json)
   (define op (open-output-file (json-file) #:exists 'replace))
@@ -156,7 +155,7 @@
 
 (define (bin2hex-cmd)
   (system-call
-   'binary-to-ihex
+   (if (windows?) 'binary-to-ihex 'binary-to-ihex.exe)
    `(0x4F00 ,(qs (tbc-file)) 
             ,(qs (hex-file)))))
 
