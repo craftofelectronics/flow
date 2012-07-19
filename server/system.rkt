@@ -6,7 +6,8 @@
          (file "base.rkt")
          (file "paths.rkt")
          (file "jsonconv.rkt")
-         (file "store.rkt"))
+         (file "store.rkt")
+         (file "bin-to-ihex.rkt"))
 
 (provide run install-firmware)
 
@@ -220,7 +221,8 @@
 (define (avrdude)
   (define ARDUINO-PORT (get-data 'port))
   (define cmd (avrdude-cmd ARDUINO-PORT 
-                           (fix-separators (path->relative (hex-file)))
+                           ;(fix-separators (path->relative (hex-file)))
+                           (format "~a.hex" temp-file-base)
                            #;(hex-file)
                            ))
   (report 'AVRDUDE cmd)
@@ -257,7 +259,11 @@
   
   (when-file (tbc-file)
              (report 'BIN-TO-HEX " ")
-             (bin2hex))
+             ;(bin2hex)
+             (binary-to-ihex
+              (get-data 'start-address)
+              (tbc-file)
+              (hex-file)))
   
   (when-file (hex-file)
              (report 'UPLOADING " ")

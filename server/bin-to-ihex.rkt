@@ -14,9 +14,6 @@
 ; f = open(sys.argv[2], "rb")
 ; data = f.read()
 ; f.close()
-(define data 'NoData)
-(set! data (file->string "binary-to-ihex"))
-(define infile "binary-to-ihex")
 
 ;; No tencstrip laying around...
 
@@ -53,7 +50,7 @@
   )
 
 (require rnrs/arithmetic/fixnums-6)
-(define (loop ip addr)
+(define (loop ip op addr)
   ; while len(data) > 0:
   ; line_data = data[:line_len]
   ; data = data[line_len:]
@@ -69,17 +66,17 @@
                      (bytes->list next-line)))
       ; bytes += map(ord, line_data)
       ; write_line(bytes)
-      (write-line bytes (current-output-port)) 
+      (write-line bytes op) 
       ; addr += len(line_data)
       (unless (zero? (bytes-length next-line))
-        (loop ip (+ addr (bytes-length next-line)))))))
+        (loop ip op (+ addr (bytes-length next-line)))))))
 
 
 
 (define (binary-to-ihex start-addr infile outfile)
   (define ip (open-input-file infile))
   (define op (open-output-file outfile))
-  (loop ip start-addr)
+  (loop ip op start-addr)
   (write-line (list #x00 #x00 #x00 END-OF-FILE) op)
   (close-input-port ip)
   (close-output-port op)
