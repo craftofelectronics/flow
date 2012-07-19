@@ -3,6 +3,8 @@
 (provide 
  (all-defined-out))
 
+(define (windows?)
+  (equal? (system-type) 'windows))
 
 (define (->sym v)
   (string->symbol (format "~a" v)))

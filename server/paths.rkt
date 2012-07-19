@@ -17,6 +17,13 @@
       (set! cached-umbrella v)))
   cached-umbrella)
 
+(define (fix-separators o)
+  (if (windows?)
+      ;;(regexp-replace* "/" (format "~a" o) "\\\\")
+      (let ([split (regexp-split "/" (format "~a" o))])
+        (->string (apply build-path split)))
+      (format "~a" o)))
+
 (define path->relative
   (make-path->relative-string
    (list 
@@ -81,7 +88,7 @@
 
 (define (isearch-list)
   (map (λ (p)
-         (build-path 'up 'up p))
+         (build-path (UMBRELLA) p))
        (list 
         (build-path "occam" "flow")
         (build-path "occam" "lib")

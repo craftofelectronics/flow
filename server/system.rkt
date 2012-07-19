@@ -68,23 +68,18 @@
   (system cmd))
 
 (define (compile-cmd fname)
-  (for-each (λ (p)
-              (debug (format "P: ~a~nR: ~a~n"
-                             p
-                             (path->relative p))))
-            (isearch-list))
   
+  (report 'ISEARCH-LIST 
+          (format "~a~n" (isearch-list)))
+    
   (system-call
   'occ21
   (append
    `(-t2 -V -etc -w -y -znd -znec 
          -udo -zncc -init -xin -mobiles 
          -zrpe -zcxdiv -zcxrem -zep -b -tle 
-         -DEF (= F.CPU 16000000) -DEF OCCBUILD.TVM)
-   (map (λ (p)
-          `(-L ,(path->relative p)))
-        (isearch-list))
-   `(,(qs fname)))))
+         -DEF (= F.CPU 16000000) -DEF OCCBUILD.TVM
+         ,(qs fname)))))
 
 (define (save-json-file json)
   (define op (open-output-file (json-file) #:exists 'replace))
@@ -105,28 +100,55 @@
 
 (define (identity o) o)
 (define (compile-occam-file)
+  
+  (report 'DEFINE-ISEARCH " ")
   (define isearch (apply string-append 
                          (list-intersperse 
-                          (map qs (map ->string (isearch-list)))
+                          (map ->string (isearch-list))
                           (if (equal? (system-type) 'windows)
                               ";"
                               ":"))))
+  
+  (report 'BUILD-COMPILE-CMD " ")
   (define cmd (compile-cmd (occ-file)))
   
-  ;(set! cmd (format "export ISEARCH=~a ; ~a" isearch cmd))
-  
+ 
   (putenv "ISEARCH" isearch)
   (report "ISEARCH" (getenv "ISEARCH"))
+  
+  (report 'CURRENT-DIRECTORY-BEFORE (format "~a" (current-directory)))
   (current-directory (temp-path))
+  
+  (report 'CURRENT-DIRECTORY-AFTER (format "~a" (current-directory)))
+  
   (report 'COMPILE cmd)
   (exe cmd))
 
 (define (plinker-cmd)
+  ;; Need to add some DLLs to the path?
+  (report 'PATH (getenv "PATH"))
+  
+  (when (windows?)
+    (define (dll sym)
+      (build-path (UMBRELLA) "bin" "windows" (->string sym)))
+    (let ([PATH (getenv "PATH")])
+      (define updated-path
+        (apply string-append
+               (list-intersperse
+                (list 
+                 (->string (build-path (UMBRELLA) "bin" "windows"))
+                 (->string (build-path (UMBRELLA) "bin" "windows" "Microsoft.VC90.CRT"))
+                 PATH)
+                ";")))
+      (putenv "PATH" updated-path)
+      (report 'UPDATED-PATH (getenv "PATH"))
+      ))
+     
   (system-call
-   'plinker.pl
-   `(-s -o ,(tbc-file)
+   (if (windows?) 'plinker.exe 'plinker.pl)
+   `(-s -o ,(qs (tbc-file))
         ,(->string (occam-lib-path 'forall))
-        ,(tce-file))))
+        ,(qs (tce-file)))))
 
 (define (plink)
   (report 'PLINK (plinker-cmd))
@@ -135,7 +157,8 @@
 (define (bin2hex-cmd)
   (system-call
    'binary-to-ihex
-   `(0x4F00 ,(tbc-file) ,(hex-file))))
+   `(0x4F00 ,(qs (tbc-file)) 
+            ,(qs (hex-file)))))
 
 (define (bin2hex)
   (report 'BINARY-TO-IHEX (bin2hex-cmd))
@@ -181,6 +204,9 @@
 |#
 
 (define (avrdude-cmd sp file)
+  (report 'FILE (format "~a" file))
+  (report 'FIXED (fix-separators file))
+  
   (system-call
    'avrdude
    `(-C ,(->string (avrdude-conf-file))
@@ -190,12 +216,14 @@
         (-c arduino)
         (-P ,(build-port sp))
         -D -U 
-        ,(format "flash:w:~s" file))))
+        ,(format "flash:w:~a" (->string file)))))
 
 (define (avrdude)
   (define ARDUINO-PORT (get-data 'port))
   (define cmd (avrdude-cmd ARDUINO-PORT 
-                           (path->relative (hex-file))))
+                           (fix-separators (path->relative (hex-file)))
+                           #;(hex-file)
+                           ))
   (report 'AVRDUDE cmd)
   
   (when ARDUINO-PORT
@@ -207,20 +235,34 @@
             (get-keys)))
 
 (define (run req json)
+  (report 'SHOW-TABLE " ")
   (show-table)
+  
+  (report 'CLEANUP-TEMP-FILES " ")
   (cleanup-temp-files)
+  
+  (report 'SAVE-JSON-FILE " ")
   (save-json-file (format "~a" json))
+  
+  (report 'TRANSFORM-JSON-FILE " ")
   (transform-json-file)
+  
+  (report 'WHEN-OCC-FILE " ")
   (when-file (occ-file)
-    (compile-occam-file))
+             (report 'COMPILE-OCC-FILE " ")
+             (compile-occam-file))
+  
   (when-file (tce-file)
-    (plink))
+             (report 'PLINK " ")
+             (plink))
+  
   (when-file (tbc-file)
-    (bin2hex))
+             (report 'BIN-TO-HEX " ")
+             (bin2hex))
   
   (when-file (hex-file)
-    (printf "Uploading~n")
-    (avrdude))
+             (report 'UPLOADING " ")
+             (avrdude))
   )
 
 
