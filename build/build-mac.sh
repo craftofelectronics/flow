@@ -9,6 +9,13 @@ say -v Victoria "Done compiling."
 mv ${APP} ../build
 popd
 
+# http://hints.macworld.com/article.php?story=20051225191249727
+pushd ../build/
+  rm ${FLOWAPPCONTENTS}/Resources/Starter.icns
+  sips -s format icns omer-256.jpg --out ${FLOWAPPCONTENTS}/Resources/Starter.icns
+popd
+
+
 mkdir -p ${FLOWAPPCONTENTS}/bin/macosx/
 cp -R ../bin/macosx/ ${FLOWAPPCONTENTS}/bin/macosx/
 cp -R ../config/ ${FLOWAPPCONTENTS}/config/
