@@ -186,23 +186,6 @@
       [(windows) sp]))
   PORT)
 
-;; FIXME
-
-;; There needs to be more parameterization here.
-#|
-(define (avrdude-cmd sp)
-  (system-call
-   'avrdude
-   `(-C ,(->string (avrdude-conf-file))
-        -V -F 
-        (-p ,(get-data 'mcpu))
-        (-b ,(get-data 'baud))
-        (-c arduino)
-        (-P ,(build-port sp))
-        -D -U 
-        ,(format "flash:w:~a" (hex-file)))))
-|#
-
 (define (avrdude-cmd sp file)
   (report 'FILE (format "~a" file))
   (report 'FIXED (fix-separators file))
@@ -218,15 +201,14 @@
         -D -U 
         ,(format "flash:w:~a" (->string file)))))
 
+;; For uploading user code, not firmware.
 (define (avrdude)
   (define ARDUINO-PORT (get-data 'port))
   (define cmd (avrdude-cmd ARDUINO-PORT 
-                           ;(fix-separators (path->relative (hex-file)))
                            (format "~a.hex" temp-file-base)
                            #;(hex-file)
                            ))
   (report 'AVRDUDE cmd)
-  
   (when ARDUINO-PORT
     (exe cmd)))
 
@@ -281,7 +263,12 @@
     ;; FIXME: This works on Windows.
     ;; It solves an absolute path problem that makes AVRDUDE choke.
     ;; Dunno if it should be on all platforms.
-    (define cmd (avrdude-cmd ARDUINO-PORT (path->relative path)))
+    (define cmd 
+      (if (windows?)
+        (avrdude-cmd ARDUINO-PORT (path->relative path))
+        (begin
+          (current-directory (firmware-path))
+          (avrdude-cmd ARDUINO-PORT path))))
   
     (report 'FIRMWARE cmd)
     (exe cmd)))
