@@ -4,7 +4,7 @@ echo. Setting up variables
 
 set src=C:\Documents and Settings\Administrator\My Documents\GitHub\flow
 set build=%src%\build
-set ddname=flow-win
+set ddname=flow
 set dest=%src%\build\%ddname%
 set raco="C:\Program Files\Racket\raco.exe"
 set zip="C:\Program Files\7-Zip\7z.exe"
