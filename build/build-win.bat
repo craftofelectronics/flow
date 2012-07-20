@@ -4,12 +4,19 @@ echo. Setting up variables
 
 set src=C:\Documents and Settings\Administrator\My Documents\GitHub\flow
 set build=%src%\build
-set dest=%src%\build\flow
+set ddname=flow-win
+set dest=%src%\build\%ddname%
 set raco="C:\Program Files\Racket\raco.exe"
+set zip="C:\Program Files\7-Zip\7z.exe"
+
+REM REMOVE THE DESTINATION IF IT EXISTS
+cd "%build%"
+rm -rf %ddname%
 
 REM MAKE DESTINATION DIRECTORY
 echo. Making destination directories.
 mkdir "%dest%"
+
 REM MAKE TEMP DIRECTORY IN DESTINATION
 mkdir "%dest%\temp"
 
@@ -26,8 +33,12 @@ REM COPY NEEDED DIRECTORIES
 call:xcopy_sd bin
 call:xcopy_sd interface
 call:xcopy_sd occam
-GOTO:EOF
 
+REM ZIP EVERYTHING
+echo. Zipping things up.
+%zip% a -r %ddname%.zip %ddname%
+
+GOTO:EOF
 
 REM End of script
 goto:eof
