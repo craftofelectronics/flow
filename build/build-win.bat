@@ -35,6 +35,7 @@ REM COPY NEEDED DIRECTORIES
 call:xcopy_sd bin
 call:xcopy_sd interface
 call:xcopy_sd occam
+call:xcopy_sd config
 
 REM ZIP EVERYTHING
 echo. Zipping things up.

@@ -12,8 +12,12 @@
 (define (UMBRELLA)
   (when (symbol? cached-umbrella)
     (let ([v (simplify-path
-              (build-path 
-               (find-system-path 'run-file) 'up 'up))])
+              (if (windows?)
+                  (build-path 
+                   (find-system-path 'run-file) 'up)
+                  (build-path 
+                   (find-system-path 'run-file) 'up 'up))
+                  )])
       (set! cached-umbrella v)))
   cached-umbrella)
 
