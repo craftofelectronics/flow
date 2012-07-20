@@ -12,6 +12,8 @@ set zip="C:\Program Files\7-Zip\7z.exe"
 REM REMOVE THE DESTINATION IF IT EXISTS
 cd "%build%"
 rm -rf %ddname%
+REM REMOVE THE ZIPFILE TOO
+rm -rf %ddname%.zip
 
 REM MAKE DESTINATION DIRECTORY
 echo. Making destination directories.
