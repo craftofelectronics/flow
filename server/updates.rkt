@@ -9,6 +9,14 @@
 (require net/url)
 
 (define (check-for-updates)
+  (with-handlers ([exn:fail? (λ (e)
+                               ;; Die (mostly) silently.
+                               (debug "check-for-updates FAILED.")
+                               (debug (format "~n~a~n" e))
+                               )])
+      (check-for-updates-wrapped)))
+      
+(define (check-for-updates-wrapped)
   (define params-local (read-params 'server))
   (define params-remote
     (call/input-url
@@ -54,34 +62,32 @@
 
 (define (fetch-updated-params remote)
   (case (->sym (second remote))
-    [(config)
-     (define new-file
-       (call/input-url
-        (string->url (format "~a/~a/~a"
-                             (get-data 'remote-url) 
-                             (second remote)
-                             (first remote)))
-        get-pure-port (λ (ip) (port->string ip))))
-     (debug (format "Writing ~a~n" (first remote)))
-     ;(debug new-file)
-     (call-with-output-file
-         (config-file (strip-rkt (first remote)))
-       (λ (op) (fprintf op "~a" new-file))
-       #:exists 'replace)
-     ]
-    
-    [(occam/flow) 
-     (define new-file
-       (call/input-url
-        (string->url (format "~a/~a/~a"
-                             (get-data 'remote-url) 
-                             (second remote)
-                             (first remote)))
-        get-pure-port (λ (ip) (port->string ip))))
-     (debug (format "Writing ~a~n" (first remote)))
-     (call-with-output-file
-         (build-path (occam-path) (first remote))
-       (λ (op) (fprintf op "~a" new-file))
-       #:exists 'replace)]
-    ))
+      [(config)
+       (define new-file
+         (call/input-url
+          (string->url (format "~a/~a/~a"
+                               (get-data 'remote-url) 
+                               (second remote)
+                               (first remote)))
+          get-pure-port (λ (ip) (port->string ip))))
+       (debug (format "Writing ~a~n" (first remote)))
+       ;(debug new-file)
+       (call-with-output-file
+           (config-file (strip-rkt (first remote)))
+         (λ (op) (fprintf op "~a" new-file))
+         #:exists 'replace)]
+      [(occam/flow) 
+       (define new-file
+         (call/input-url
+          (string->url (format "~a/~a/~a"
+                               (get-data 'remote-url) 
+                               (second remote)
+                               (first remote)))
+          get-pure-port (λ (ip) (port->string ip))))
+       (debug (format "Writing ~a~n" (first remote)))
+       (call-with-output-file
+           (build-path (occam-path) (first remote))
+         (λ (op) (fprintf op "~a" new-file))
+         #:exists 'replace)]
+      ))
 

@@ -40,3 +40,10 @@ rm -rf ${BASE}.dmg
 	${BASE}.dmg ${APP}
 
 say -v Victoria "Done making disk image."
+
+say -v Victoria "Transferring zeroes and ones into the internets."
+
+if [ "${USER}" == "jadudm" ]; then
+	scp -i ~/.ssh/id_rsa ${BASE}.dmg jadudm@transterpreter.org:/srv/www/org/transterpreter.download/files/flow/
+fi
+say -v Victoria "I have uploaderized the file."

@@ -135,17 +135,28 @@
        [label "Setup my Arduino"]
        [callback 
         (λ (m e)
+          (define end 0)
+          (define start (current-seconds))
           (do-setup)
           (install-firmware)
+          (set! end (current-seconds))
+          
           (let ([d (new dialog% 
                         [label "Go with the Flow"]
                         [style (list 'close-button)]
                         )])
-            
-            ((messages d) 
-             "Arduino Status: Magical."
-             " "
-             "(See concurrency.cc for details.)")
+            (if (< (- end start) 3)
+                ((messages d) 
+                 "Our suspicion:"
+                 " "
+                 "SOFTWARE FAIL"
+                 " "
+                 "Go to http://concurrency.cc/, click on 'Support',"
+                 "and ask for help on the 'users' mailing list.")
+                ((messages d) 
+                 "Arduino Status: Magical."
+                 " "
+                 "(See concurrency.cc for details.)"))
             
             (new button%
                  [parent d]
