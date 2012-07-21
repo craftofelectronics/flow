@@ -186,7 +186,9 @@
   ;; Set the port
   (set-data!
    'port
-   (list-ref ports (send port get-selection)))
+   (if (empty? ports)
+     "Arduino Not Found."
+     (list-ref ports (send port get-selection))))
   (show-params))
 
 #|

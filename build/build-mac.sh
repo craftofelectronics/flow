@@ -35,6 +35,7 @@ rm -rf ${BASE}.dmg
 ./create-dmg/create-dmg \
 	--background ${VOLICON}.png \
 	--icon-size 128 \
+	--icon ${APP} 220 200 \
 	--volicon ${VOLICON}-256.icns \
 	${BASE}.dmg ${APP}
 
