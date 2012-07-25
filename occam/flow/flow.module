@@ -2,6 +2,11 @@
 
 VAL INT READ.DELAY IS 10:
 
+PROC AlwaysOn (CHAN INT out!)
+  WHILE TRUE
+    out ! 100
+:
+
 PROC MiddlePass (VAL INT low, high, CHAN INT in?, out!)
   INT v:
   WHILE TRUE

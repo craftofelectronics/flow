@@ -190,6 +190,23 @@ var ifttt = {
 	   	}
 	   },
 	   
+	  {
+    "name": "Always On",
+    "container": {
+      "xtype": "WireIt.FormContainer",
+      "title": "alwayson",    
+      "icon": "res/icons/application_edit.png",
+      "collapsible": false,
+      "fields": [ 
+
+      ],
+      "terminals": [
+        {"name": "0out", "direction": [0,-1], "offsetPosition": {"left": 100, "bottom": -15 }},
+        ],
+      "legend": "Send an 'on' signal."
+	   	}
+	   },
+	   
 	   	   {
     "name": "Merge",
     "container": {
