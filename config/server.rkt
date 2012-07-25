@@ -5,7 +5,7 @@
       (versions . (("server.rkt"      "config"       100)
                    ("arduino.rkt"     "config"       100)
                    ("arduinouno.rkt"  "config"       100)
-                   ("flow.module"     "occam/flow"   100)))
+                   ("flow.module"     "occam/flow"   101)))
       (update-paths . (("occam/flow"
                         "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
                        ("config"
