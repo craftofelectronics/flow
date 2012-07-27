@@ -6,6 +6,7 @@
                         ("arduino.rkt"     . 100)
                         ("arduinouno.rkt"  . 100)
                         ("flow.module"     . 101)
+                        ;; The JS modules need to be a directory, not a file...
                         ("ifttt.js"        . 100)
                    ))
       (update-paths . #hash(("server.rkt"      . "config")

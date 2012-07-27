@@ -14,8 +14,8 @@
                                (debug "check-for-updates FAILED.")
                                (debug (format "~n~a~n" e))
                                )])
-      (check-for-updates-wrapped)))
-      
+    (check-for-updates-wrapped)))
+
 (define (check-for-updates-wrapped)
   (define params-local (read-params 'server))
   (define params-remote
@@ -24,11 +24,7 @@
       (format "~a/~a" (get-data 'remote-url) "config/server.rkt"))
      get-pure-port 
      (λ (ip) 
-       (let ([str (port->string ip)])
-         (printf "~a~n" str)
-         (call-with-input-string
-          str (λ (ip)
-                (read ip)))))))
+       (read ip))))
   
   (define versions-local
     (hash-ref params-local 'versions))
@@ -41,53 +37,62 @@
   (define (push v)
     (set! to-update (cons v to-update)))
   
-  (for-each (λ (vl vr)
-              (debug (format "Comparing local[~a] to remote[~a]~n" (third vl) (third vr)))
-              (when (< (third vl) (third vr))
-                (debug (format "~a < ~a~n" (third vl) (third vr)))
-                (push vl)))
-            versions-local
-            versions-remote)
+  ;; Need to handle hashes instead of lists...
+  ;; Assume the remote is bigger than the local.
+  ;; That is, an update was pushed to the remote.
+  (hash-for-each 
+   versions-remote
+   (λ (k v)
+     (let ([localv (hash-ref 
+                    versions-local
+                    k (λ () false))])
+       (when (< localv v)
+         (debug (format "~a < ~a~n" localv v))
+         (push k)))))
   
   (when (not (empty? to-update))
-    (fetch-updated-params (list "server.rkt" "config" 'NotNeededForFetch))
+    (fetch-updated-params "server.rkt" "config")
     (for-each (λ (v)
                 (debug (format "Updating [~a]~n" v))
-                (fetch-updated-params v))
+                (fetch-updated-params 
+                 v (hash-ref 
+                    (hash-ref params-remote
+                              'update-paths) v)
+                                      ))
               to-update))
   )
 
 (define (strip-rkt str)
   (regexp-replace ".rkt" str ""))
 
-(define (fetch-updated-params remote)
-  (case (->sym (second remote))
-      [(config)
-       (define new-file
-         (call/input-url
-          (string->url (format "~a/~a/~a"
-                               (get-data 'remote-url) 
-                               (second remote)
-                               (first remote)))
-          get-pure-port (λ (ip) (port->string ip))))
-       (debug (format "Writing ~a~n" (first remote)))
-       ;(debug new-file)
-       (call-with-output-file
-           (config-file (strip-rkt (first remote)))
-         (λ (op) (fprintf op "~a" new-file))
-         #:exists 'replace)]
-      [(occam/flow) 
-       (define new-file
-         (call/input-url
-          (string->url (format "~a/~a/~a"
-                               (get-data 'remote-url) 
-                               (second remote)
-                               (first remote)))
-          get-pure-port (λ (ip) (port->string ip))))
-       (debug (format "Writing ~a~n" (first remote)))
-       (call-with-output-file
-           (build-path (occam-path) (first remote))
-         (λ (op) (fprintf op "~a" new-file))
-         #:exists 'replace)]
-      ))
+(define (fetch-updated-params cfg-file cfg-path)
+  (case (->sym cfg-path)
+    [(config)
+     (define new-file
+       (call/input-url
+        (string->url (format "~a/~a/~a"
+                             (get-data 'remote-url) 
+                             cfg-path
+                             cfg-file))
+        get-pure-port (λ (ip) (port->string ip))))
+     (debug (format "Writing ~a~n" cfg-file))
+     ;(debug new-file)
+     (call-with-output-file
+         (config-file (strip-rkt cfg-file))
+       (λ (op) (fprintf op "~a" new-file))
+       #:exists 'replace)]
+    [(occam/flow) 
+     (define new-file
+       (call/input-url
+        (string->url (format "~a/~a/~a"
+                             (get-data 'remote-url) 
+                             cfg-path
+                             cfg-file))
+        get-pure-port (λ (ip) (port->string ip))))
+     (debug (format "Writing ~a~n" cfg-file))
+     (call-with-output-file
+         (build-path (occam-path) cfg-file)
+       (λ (op) (fprintf op "~a" new-file))
+       #:exists 'replace)]
+    ))
 
