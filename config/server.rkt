@@ -2,18 +2,25 @@
       (server-port . 8000)
       (base-url . "http://localhost:8000")
       (remote-url . "https://raw.github.com/craftofelectronics/flow/master")
-      (versions . (("server.rkt"      "config"       100)
-                   ("arduino.rkt"     "config"       100)
-                   ("arduinouno.rkt"  "config"       100)
-                   ("flow.module"     "occam/flow"   101)
-                   ("ifttt.js"        "interface"    100)
+      (versions . #hash(("server.rkt"      . 100)
+                        ("arduino.rkt"     . 100)
+                        ("arduinouno.rkt"  . 100)
+                        ("flow.module"     . 101)
+                        ("ifttt.js"        . 100)
                    ))
-      (update-paths . (("occam/flow"
-                        "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
-                       ("interface"
-                        "https://raw.github.com/craftofelectronics/flow/master/interface/")
-                       ("config"
-                        "https://raw.github.com/craftofelectronics/flow/master/config/")))
+      (update-paths . #hash(("server.rkt"      . "config")
+                            ("arduino.rkt"     . "config")
+                            ("arduinouno.rkt"  . "config")
+                            ("flow.module"     . "occam/flow")
+                            ("ifttt.js"        . "interface")
+                            ))
+      (update-urls . #hash(("occam/flow" .
+                            "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
+                           ("interface" .
+                            "https://raw.github.com/craftofelectronics/flow/master/interface/")
+                           ("config" .
+                            "https://raw.github.com/craftofelectronics/flow/master/config/")))
+      
       (max-windows-com-port . 15)
       )
         
