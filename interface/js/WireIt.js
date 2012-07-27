@@ -52,6 +52,7 @@ var WireIt = {
       }
       if(styleAttributes){
          for(var i in styleAttributes){
+
             if(typeof (styleAttributes[i])=="function"){ continue; }
             if(el.style[i]!=styleAttributes[i]){
                el.style[i]=styleAttributes[i];

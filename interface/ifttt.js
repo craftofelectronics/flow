@@ -159,6 +159,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "delta",    
+      "color": "#ff0000",
       "icon": "res/icons/application_edit.png",
       "collapsible": false,
       "fields": [ 
