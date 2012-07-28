@@ -218,6 +218,12 @@
             (get-keys)))
 
 (define (run req json)
+  (report 'UPLOAD-TVM " ")
+  (when (zero? (get-data 'tvm-installed))
+    (set-data! 'tvm-installed 1)
+    (install-firmware)
+    )
+  
   (report 'SHOW-TABLE " ")
   (show-table)
   

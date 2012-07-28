@@ -1,4 +1,5 @@
 #hash((module . "flow.module")
+      (tvm-installed . 0)
       (server-port . 8000)
       (base-url . "http://localhost:8000")
       (remote-url . "https://raw.github.com/craftofelectronics/flow/master")
