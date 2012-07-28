@@ -7,16 +7,24 @@
                         ("arduinouno.rkt"      . 100)
                         ("blocksets.rkt"       . 100)
                         ("flow.module"         . 101)
+                        ("flow.js"             . 100)
+                        ("simple.js"           . 100)
                         ))
       (update-paths . #hash(("server.rkt"      . "config")
                             ("arduino.rkt"     . "config")
                             ("arduinouno.rkt"  . "config")
                             ("blocksets.rkt"   . "config")
                             ("flow.module"     . "occam/flow")
+                            ("flow.js"         . "interface/blocks")
+                            ("simple.js"       . "interface/blocks")
                             ))
+      (blocksets 
+       . #hash(("Flow" . #hash(("filename"    . "flow.js")))
+               ("Simple" . #hash(("filename"    . "simple.js"))
+                         )))
       (update-urls . #hash(("occam/flow" .
                             "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
-                           ("blocks" .
+                           ("interface/blocks" .
                             "https://raw.github.com/craftofelectronics/flow/master/interface/blocks/")
                            ("config" .
                             "https://raw.github.com/craftofelectronics/flow/master/config/")))

@@ -14,7 +14,9 @@
                                (debug "check-for-updates FAILED.")
                                (debug (format "~n~a~n" e))
                                )])
-    (check-for-updates-wrapped)))
+    (check-for-updates-wrapped)
+    
+    ))
 
 (define (check-for-updates-wrapped)
   (define params-local (read-params 'server))
@@ -92,6 +94,19 @@
      (debug (format "Writing ~a~n" cfg-file))
      (call-with-output-file
          (build-path (occam-path) cfg-file)
+       (λ (op) (fprintf op "~a" new-file))
+       #:exists 'replace)]
+    [(interface/blocks) 
+     (define new-file
+       (call/input-url
+        (string->url (format "~a/~a/~a"
+                             (get-data 'remote-url) 
+                             cfg-path
+                             cfg-file))
+        get-pure-port (λ (ip) (port->string ip))))
+     (debug (format "Writing ~a~n" cfg-file))
+     (call-with-output-file
+         (build-path (blocks-path) cfg-file)
        (λ (op) (fprintf op "~a" new-file))
        #:exists 'replace)]
     ))

@@ -68,6 +68,9 @@
 (define (occam-path)
   (build-path (UMBRELLA) "occam" "flow"))
 
+(define (blocks-path)
+  (build-path (UMBRELLA) "occam" "interface" "blocks"))
+
 (define (firmware-path)
   (build-path (UMBRELLA) "occam" "firmware"))
 

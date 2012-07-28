@@ -9,6 +9,11 @@ rm -rf ${APP}
 pushd ../server/
 raco exe --gui -o ${BASE} gui.rkt
 say -v Victoria "Done compiling."
+mkdir -p /tmp/${BASE}-dist
+raco distribute /tmp/${BASE}-dist ${APP}
+rm -rf ${APP}
+mv /tmp/${BASE}-dist/${APP} . 
+say -v Victoria "Ready to distribute."
 mv ${APP} ../build
 popd
 

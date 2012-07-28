@@ -202,7 +202,8 @@
     (set-data! 'block-set-file block-set-file))
   )
 
-(load-params 'blocksets)
+; Part of server.rkt
+;(load-params 'blocksets)
 (define (list-block-sets)
   (let ([h (get-data 'blocksets)]
         [keys '()])
