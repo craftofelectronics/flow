@@ -177,6 +177,7 @@
        [min-width MIN-WIDTH]
        [callback (λ (ch evt) 'DoNothingHere) ]))
 
+;; This should move to config file.
 (define types 
   '(("Arduino Uno" arduinouno)
     ("Arduino Duemillanove" arduino)
@@ -212,8 +213,11 @@
         [keys '()])
     (hash-for-each
      h (λ (k v)
-         (set! keys (cons k keys))))
-    keys))
+         (set! keys (cons (list k
+                                (hash-ref (hash-ref h k) "sort"))
+                                keys))))
+    (map first (sort keys < #:key second))
+    ))
 
 (define block-set
   (new choice%
