@@ -1,7 +1,7 @@
-var ifttt = {
+var blocks = {
 	
 	// Set a unique name for the language
-	languageName: "IFTTT",
+	languageName: "Flow",
 
 	// inputEx fields for pipes properties
 	propertiesFields: [
@@ -21,7 +21,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "read_sensor",
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": true,
       "fields": [ 
         {"type": "select", "inputParams": {"label": "Pin", "name": "0int", "selectValues": ["A0", "A1", "A2", "A3", "A4", "A5"] } },
@@ -37,7 +37,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "sensor_in_range",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": true,
       "fields": [ 
         {"type": "select", "inputParams": {"label": "Pin", "name": "0int", "selectValues": ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"] } },
@@ -55,7 +55,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "turn_on",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": true,
       "fields": [ 
         {"type": "select", "inputParams": {"label": "Pin", "name": "0int", "selectValues": ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"] } },
@@ -71,7 +71,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "fade",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": true,
       "fields": [ 
         {"type": "select", "inputParams": {"label": "Pin", "name": "0int", "selectValues": ["3", "5", "6", "9", "10", "11"] } },
@@ -87,7 +87,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "fade",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": true,
       "fields": [ 
         {"type": "select", "inputParams": {"label": "Pin", "name": "0int", "selectValues": ["3", "5", "6", "9", "10", "11"] } },
@@ -103,7 +103,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "toggle",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": true,
       "fields": [ 
         {"type": "select", "inputParams": {"label": "Pin", "name": "0int", "selectValues": ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"] } },
@@ -120,7 +120,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "iao",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": true,
       "fields": [ 
         {"inputParams": {"label": "Min Value", "name": "0int", "value":"25", "required": true } }, 
@@ -140,7 +140,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "and",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": false,
       "fields": [ 
 
@@ -160,7 +160,7 @@ var ifttt = {
       "xtype": "WireIt.FormContainer",
       "title": "delta",    
       "color": "#ff0000",
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": false,
       "fields": [ 
 
@@ -179,7 +179,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "blackhole",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": false,
       "fields": [ 
 
@@ -196,7 +196,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "alwayson",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": false,
       "fields": [ 
 
@@ -213,7 +213,7 @@ var ifttt = {
     "container": {
       "xtype": "WireIt.FormContainer",
       "title": "multiplex",    
-      "icon": "res/icons/application_edit.png",
+      "icon": "images/tvm.png",
       "collapsible": false,
       "fields": [ 
 

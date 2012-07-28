@@ -21,7 +21,7 @@
   (response/xexpr
    `(html
      (body 
-      (p ,(hash-ref data (->sym key) (λ () "Oops")))))))
+      (p ,(hash-ref data (->string key) (λ () "Oops")))))))
 
 (define (set-data! key value)
   (hash-set! data (->sym key) value))

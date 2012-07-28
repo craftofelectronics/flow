@@ -176,7 +176,10 @@
 
 (define types 
   '(("Arduino Uno" arduinouno)
-    ("Arduino Duemillanove" arduino)))
+    ("Arduino Duemillanove" arduino)
+    ("Raspberry-Pi (TBA)" raspberry-pi)
+    ))
+
 
 (define type
   (new choice%
@@ -187,13 +190,50 @@
        [callback (λ (ch evt) 'DoNothingHere)]
        ))
 
+
+(define (get-block-set-file name)
+  (let ([h (get-data 'blocksets)])
+    (hash-ref (hash-ref h (->string name)) "filename")))
+
+(define (set-block-set)
+  (let* ([name (send block-set get-string (send block-set get-selection))]
+         [block-set-file (get-block-set-file name)])
+    (debug (format "Setting block set to [~a]~n" block-set-file))
+    (set-data! 'block-set-file block-set-file))
+  )
+
+(load-params 'blocksets)
+(define (list-block-sets)
+  (let ([h (get-data 'blocksets)]
+        [keys '()])
+    (hash-for-each
+     h (λ (k v)
+         (set! keys (cons k keys))))
+    keys))
+
+(define block-set
+  (new choice%
+       [parent f]
+       [label "Block Set"]
+       [min-width MIN-WIDTH]
+       [choices (list-block-sets)]
+       [callback (λ (ch evt)
+                   (set-block-set)
+                   )]
+       ))
+
 (define hp
   (new horizontal-pane%
        [parent f]))
 
 (define (do-setup)
   (let ([ndx (send type get-selection)])
+    ;; Load parameter data for the board type
     (load-params (list-ref (map second types) ndx)))
+  
+  ;; Choose the left-hand side blocksets
+  (set-block-set)
+  
   ;; Set the port
   (set-data!
    'port
@@ -201,20 +241,6 @@
      "Arduino Not Found."
      (list-ref ports (send port get-selection))))
   (show-params))
-
-#|
-(define firmware
-  (new button%
-       [parent hp]
-       [label "Setup"]
-       [callback (λ (b e)
-                   (send firmware set-label "Installing")
-                   (do-setup)
-                   (install-firmware)
-                   (send firmware set-label "Installed")
-                   )]))
-|#
-
 
 (define server-thread-id 'NoThreadID)
 (define launch

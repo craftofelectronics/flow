@@ -31,7 +31,7 @@ body {
 #toolbar {
    position: absolute;
    top: 10px;
-   left: 300px;
+   left: 330px;
 }
 
 #toolbar .yui-button {
@@ -43,27 +43,27 @@ body {
 }
 
 #WiringEditor-saveButton button {
- background:transparent url(../images/icons/database_save.png) no-repeat scroll 10% 50%;
+ background:transparent url(/images/icons/database_save.png) no-repeat scroll 10% 50%;
 
 }
 #WiringEditor-deleteButton button {
- background:transparent url(../images/icons/delete.png) no-repeat scroll 10% 50%;
+ background:transparent url(/images/icons/delete.png) no-repeat scroll 10% 50%;
 }
 
 #WiringEditor-newButton button {
- background:transparent url(../images/icons/add.png) no-repeat scroll 10% 50%;
+ background:transparent url(/images/icons/add.png) no-repeat scroll 10% 50%;
 }
 
 #WiringEditor-loadButton button {
- background:transparent url(../images/icons/application_go.png) no-repeat scroll 10% 50%;
+ background:transparent url(/images/icons/application_go.png) no-repeat scroll 10% 50%;
 }
 
 #WiringEditor-helpButton button {
- background:transparent url(../images/icons/help.png) no-repeat scroll 10% 50%;
+ background:transparent url(/images/icons/help.png) no-repeat scroll 10% 50%;
 }
 
 #WiringEditor-runButton button {
- background:transparent url(../images/icons/arduino-icon.png) no-repeat scroll 10% 50%;
+ background:transparent url(/images/icons/arduino-icon.png) no-repeat scroll 10% 50%;
 }
 
 
@@ -93,7 +93,7 @@ div.savedStatus {
  
 .WiringEditor-module {
    cursor: pointer;
-   background-color: #AADDDD;
+   background-color: #ccf;
    margin: 5px;
    padding: 2px;
    font-size: 9pt;
@@ -103,7 +103,8 @@ div.savedStatus {
 }
 
 #left .WiringEditor-module:hover {
-   color: red;
+   background-color: #A000FF;
+   color: #FFF;
 }
 
 .WiringEditor-module img {

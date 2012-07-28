@@ -52,8 +52,14 @@
    [("set" (string-arg) (string-arg)) set-data/api]
    [("get" (string-arg)) get-data/api]   
    [("platform" (string-arg)) read-params/resp]
+   [("blockfile" (string-arg)) get-block-set]
    ))
 
+(define (get-block-set req ignore)
+  (let ([bsf (get-data 'block-set-file)])
+    (debug (format "BSF: ~a~n" bsf))
+    (response/xexpr
+     `(blocks ,bsf))))
 
 (define (serve)
   (debug (format "Serving 'Flow for Arduino' up from [ ~a ]~n" (www-path)))

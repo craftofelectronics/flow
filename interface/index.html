@@ -133,7 +133,8 @@ div.Bubble div.body {
 <!-- <script type="text/javascript" src="js/parse-1.0.5.min.js"></script> -->
 <script type="text/javascript" src="js/adapters/parse.js"></script>
 
-<script type="text/javascript" src="ifttt.js"></script>
+<!-- <script type="text/javascript" src="ifttt.js"></script> -->
+<!-- <script type="text/javascript" src="blockchoice.js"></script> -->
 
 
 <style>
@@ -143,23 +144,42 @@ div.WireIt-Container.WiringEditor-module-comment div.body { background-color: #E
 div.WireIt-Container.WiringEditor-module-comment div.body textarea { background-color: transparent; font-weight: bold; border: 0; }
 </style>
 
-
 <script>
+function jsInclude(script,callback){
+    $.getScript(script, function() {
+        if(typeof callback == 'function')
+        callback.apply({},arguments);
+    });
+}
 
 // InputEx needs a correct path to this image
 inputEx.spacerUrl = "lib/inputex/trunk/images/space.gif";
 
 var editor;
 
-YAHOO.util.Event.onDOMReady( function() {
-	editor = new WireIt.WiringEditor(ifttt); 
+function createEditor (blocks) {
+	editor = new WireIt.WiringEditor(blocks); 
 	// Choose a different storage adapter.
 	editor.setOptions({ adapter : WireIt.WiringEditor.adapters.Parse });
-	
 	// Open the infos panel
-	editor.accordionView.openPanel(2);
-});
+	editor.accordionView.openPanel(2); 
+}
 
+YAHOO.util.Event.onDOMReady( function() {
+   // Load the choice
+  $.ajax({
+    url: "http://localhost:8000/blockfile/",
+    type: "GET",
+    dataType: "xml",
+    success: function (data) {
+      var blocksFile = $(data).text();
+      jsInclude("/blocks/" + blocksFile,
+        function () {
+          createEditor(window.blocks);
+        });
+    }});
+  });
+  
 </script>
 
 </head>
@@ -169,12 +189,10 @@ YAHOO.util.Event.onDOMReady( function() {
 	<div id="top">
 		<div class="logo">Flow for the Arduino</a></div>
 		<div id="toolbar"></div>
-		<!--
+
 		<div class="topright">
-			<span>Hello there !</span> | 
-			<a href="../..">back to WireIt</a>
+      <a href="http://craftofelectronics.org/"><img src="images/craft-logo-40.png"/></a>
 		</div>
-		-->
 	</div>
 
 
@@ -204,16 +222,16 @@ YAHOO.util.Event.onDOMReady( function() {
 	
 	
 	<div id="helpPanel">
-	    <div class="hd">Welcome to the WiringEditor demonstration</div>
+	    <div class="hd">Welcome to the Flow editor for the Arduino.</div>
 	    <div class="bd" style="text-align: left;">
 					
-					<p>This example shows how to use the <i>ImageContainer</i> and <i>FormContainer</i> in a language definition.</p>
+					<p>This environment is built on the WireIt library.</p>
 					<br />
-					<p><b>Drag and drop modules from the Module list</b> on the left to the working layer in the middle.</p>
+					<p><b>Drag and drop modules from the Blocks list</b> on the left to the working layer in the middle.</p>
 					<br />
 					<p><a href="demo.js" target="_new">Click here to view the language definition for this editor.</a></p>
 					<br />
-					<p>Close this dialog to test the WiringEditor</p>
+					<p>Close this dialog to explore Flow.</p>
 	    </div>
 	</div>
 
