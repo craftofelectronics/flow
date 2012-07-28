@@ -23,8 +23,9 @@
                             ))
       (blocksets 
        . #hash(("Flow" . #hash(("filename"    . "flow.js")))
-               ("Simple" . #hash(("filename"    . "simple.js"))
-                         )))
+               ("Simple" . #hash(("filename"    . "simple.js")))
+               ("Test" . #hash(("filename" . "test.js")))
+                         ))
       (update-urls . #hash(("occam/flow" .
                             "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
                            ("interface/blocks" .
