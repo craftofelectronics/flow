@@ -12,6 +12,9 @@
 (load-params 'server)
 (show-paths)
 (show-relative-paths)
+;; Load changes from remote.
+(check-for-updates)
+(load-params 'server)
 
 (define MIN-WIDTH 250)
 
@@ -268,5 +271,5 @@
                      (kill-thread server-thread-id))
                    (exit)))))
 
-(check-for-updates)
+
 (send f show true)

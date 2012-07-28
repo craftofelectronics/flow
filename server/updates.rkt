@@ -15,23 +15,24 @@
                                (debug (format "~n~a~n" e))
                                )])
     (check-for-updates-wrapped)
-    
     ))
 
-(define (check-for-updates-wrapped)
-  (define params-local (read-params 'server))
-  (define params-remote
+(define (read-remote file)
+  (define remote-contents
     (call/input-url
      (string->url 
-      (format "~a/~a" (get-data 'remote-url) "config/server.rkt"))
+      (format "~a/~a" (get-data 'remote-url) file))
      get-pure-port 
      (λ (ip) 
        (read ip))))
+  remote-contents)
   
-  (define versions-local
-    (hash-ref params-local 'versions))
-  (define versions-remote
-    (hash-ref params-remote 'versions))
+(define (check-for-updates-wrapped)
+  (define params-local (read-params 'server))
+  (define params-remote (read-remote "config/server.rkt"))
+  
+  (define versions-local (hash-ref params-local 'versions))
+  (define versions-remote (hash-ref params-remote 'versions))
   
   (define any-changed? false)
   
@@ -47,7 +48,10 @@
    (λ (k v)
      (let ([localv (hash-ref 
                     versions-local
-                    k (λ () false))])
+                    ;; Return zero... it might mean there is a new
+                    ;; file, and we should download it. Returning #f
+                    ;; is a bad idea here, because of the <.
+                    k (λ () 0))])
        (when (< localv v)
          (debug (format "~a < ~a~n" localv v))
          (push k)))))
@@ -68,6 +72,11 @@
   (regexp-replace ".rkt" str ""))
 
 (define (fetch-updated-params cfg-file cfg-path)
+  (debug (format "DOING UPDATE FROM ~a~n"
+                 (format "~a/~a/~a"
+                             (get-data 'remote-url) 
+                             cfg-path
+                             cfg-file)))
   (case (->sym cfg-path)
     [(config)
      (define new-file
