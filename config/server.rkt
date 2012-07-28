@@ -10,7 +10,6 @@
                         ("flow.module"         . 101)
                         ("flow.js"             . 100)
                         ("simple.js"           . 100)
-                        ("test.js"           . 100)
                         ))
       (update-paths . #hash(("server.rkt"      . "config")
                             ("arduino.rkt"     . "config")
@@ -19,16 +18,14 @@
                             ("flow.module"     . "occam/flow")
                             ("flow.js"         . "interface/blocks")
                             ("simple.js"       . "interface/blocks")
-                            ("test.js"         . "interface/blocks")
                             ))
       (blocksets 
        . #hash(("Flow"   . #hash(("filename"    . "flow.js")
                                  ("sort"        . 0)))
                ("Simple" . #hash(("filename"    . "simple.js")
                                  ("sort"        . 10)))
-               ("Test"   . #hash(("filename"    . "test.js")
-                                 ("sort"        . 20)))
-                         ))
+               ))
+      
       (update-urls . #hash(("occam/flow" .
                             "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
                            ("interface/blocks" .
