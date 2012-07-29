@@ -6,7 +6,7 @@ You can download Flow for [Mac](http://goo.gl/HNalJ), [Linux](), and [Windows]()
 
 ## Getting Started
 
-See the quick [getting started](https://github.com/craftofelectronics/flow/blob/master/docu/testing.md) documentation that we put together. It's enough for you to get started, we hope. Or, just fiddle.
+See the quick [getting started](https://github.com/craftofelectronics/flow/blob/master/docu/getting-started.md) documentation that we put together. It's enough for you to get started, we hope. Or, just fiddle.
 
 ## The Nitty Gritty
 You can find out more about the underlying tools and technologies at <a href="http://concurrency.cc/">concurrency.cc</a>.
