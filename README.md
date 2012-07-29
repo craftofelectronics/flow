@@ -4,6 +4,10 @@ Flow is a drag-and-drop (prototype) dataflow programming environment for the Ard
 ## Download
 You can download Flow for [Mac](http://goo.gl/HNalJ), [Linux](), and [Windows](). If you have problems, please join the [users mailing list](http://concurrency.cc/docs/mailinglists.html) at concurrency.cc. (This is a very,very early-stage prototype---you have been warned.)
 
+## Getting Started
+
+See the quick [getting started](https://github.com/craftofelectronics/flow/blob/master/docu/testing.md) documentation that we put together. It's enough for you to get started, we hope. Or, just fiddle.
+
 ## The Nitty Gritty
 You can find out more about the underlying tools and technologies at <a href="http://concurrency.cc/">concurrency.cc</a>.
 
