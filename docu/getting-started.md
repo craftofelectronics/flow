@@ -34,7 +34,7 @@ On Mac and Windows, double-click the "Flow" application. On Linux, open up a com
 
 You need to make a few choices:
 
-![images/flow-gui.png](The Flow Launcher)
+![The Flow Launcher](images/flow-gui.png)
 
 ### Port
 
