@@ -17,8 +17,15 @@
      working: { modules: [Object], wires: [Object], properties: [Object] } }
 |#
 
+#|
+
+|#
+
 (define p1 
   "{\"diagram\":{\"name\":\"\",\"project\":\"\",\"working\":{\"modules\":[{\"name\":\"Read Sensor\",\"value\":{\"1int\":\"A0\"},\"config\":{\"position\":[176,34]}},{\"name\":\"Turn On In Range\",\"value\":{\"1int\":\"2\",\"2int\":\"0\",\"3int\":\"100\"},\"config\":{\"position\":[222,214]}}],\"wires\":[{\"src\":{\"moduleId\":0,\"terminal\":\"0out\"},\"tgt\":{\"moduleId\":1,\"terminal\":\"0in\"}}],\"properties\":{\"name\":\"\",\"project\":\"\",\"description\":\"\"}}},\"username\":\"\",\"project\":\"\",\"storage_key\":\"_\"}" )
+
+(define p2
+  "{\"diagram\":{\"name\":\"\",\"project\":\"\",\"working\":{\"modules\":[{\"name\":\"Read Sensor\",\"value\":{\"0int\":\"A0\"},\"config\":{\"position\":[121,38]}},{\"name\":\"Fade\",\"value\":{\"0int\":\"3\"},\"config\":{\"position\":[147,227]}}],\"wires\":[{\"src\":{\"moduleId\":0,\"terminal\":\"1out\"},\"tgt\":{\"moduleId\":1,\"terminal\":\"1in\"}}],\"properties\":{\"name\":\"\",\"project\":\"\",\"description\":\"\"}}},\"username\":\"\",\"project\":\"\",\"storage_key\":\"_\"}:")
 
 (define-syntax (get stx)
   (syntax-case stx ()
@@ -200,13 +207,13 @@
     
     (define/public (return-header)
       (define all-params 
-       (merge-hashes (list outputs inputs params)))
+        (merge-hashes (list outputs inputs params)))
       (define lop (hash-map all-params (λ (k v) (list k v))))
-     (define sorted (quicksort lop (λ (a b) (< (first a) (first b)))))
-     
-     (format "~a~a" 
-             (smoosh name)
-             (list-intersperse (map second sorted) ", ")))
+      (define sorted (quicksort lop (λ (a b) (< (first a) (first b)))))
+      
+      (format "~a~a" 
+              (smoosh name)
+              (list-intersperse (map second sorted) ", ")))
     
     (super-new)
     ))
@@ -322,43 +329,59 @@
          (format "wire~a" str))
        wires))
 
-(define (json->occ prog)
-  (define result "")
-  (define (s! s)
-    (set! result (string-append result s)))
-  
-  (define sjson      (json->sjson prog))
-  (define names      (map get-name (get-modules (get-working sjson))))
-  ;(printf "NAMES: ~a~n" names)
-  
-  (define proc-names (map smoosh names))
-  ;(printf "PROC-NAMES: ~a~n" proc-names)
-  
-  (define ndx* (srfi1:iota (length names)))
-  ;(printf "NDX*: ~a~n" ndx*)
-  
-  ;(define proc-list (map (build-procs (get-working sjson)) ndx*))
-  
-  (define proc-headers
-    (build-procs2 (get-working sjson)))
-  
-  (s! (format "#INCLUDE \"flow.module\"~n"))
-  (s! (format "PROC main~a ()\n" (current-seconds)))
-  (s! (format "  SEQ~n"))
-  ;(s! (format "    serial.start(TX0, ~a)~n" (get-data 'baud)))
-  
-  (s! (format "    CHAN INT ~a:~n" 
-              (apply string-append
-                     (list-intersperse 
-                      (build-wire-names2 (get-working sjson))
-                      ", "))))
-  (s! "    PAR\n")
-  (for-each (λ (str)
-              (s! (format "      ~a~n" str)))
-            proc-headers)
-  (s! ":\n")
-  result
+(define (get-library-name)
+  (let* ([bsf (get-data 'block-set-file)]
+         [module-name (regexp-replace ".js$" bsf "")])
+    (debug (format "Module name: ~a~n" module-name))
+    module-name))
+
+
+(define (cleanup-json prog)
+  ; Where did the trailing : come from in racket530?
+  (set! prog (regexp-replace ":$" prog ""))
+  prog
   )
+
+(define (json->occ prog)
+  (let ([prog (cleanup-json prog)])
+    (define result "")
+    (define (s! s)
+      (set! result (string-append result s)))
+    (define booger 
+      (debug (format "ERROR JSON~n===~a~n===~n" prog)))
+    
+    (define sjson      (json->sjson prog))
+    (define names      (map get-name (get-modules (get-working sjson))))
+    ;(printf "NAMES: ~a~n" names)
+    
+    (define proc-names (map smoosh names))
+    ;(printf "PROC-NAMES: ~a~n" proc-names)
+    
+    (define ndx* (srfi1:iota (length names)))
+    ;(printf "NDX*: ~a~n" ndx*)
+    
+    ;(define proc-list (map (build-procs (get-working sjson)) ndx*))
+    
+    (define proc-headers
+      (build-procs2 (get-working sjson)))
+    
+    (s! (format "#INCLUDE \"~a.module\"~n" (get-library-name)))
+    (s! (format "PROC main~a ()\n" (current-seconds)))
+    (s! (format "  SEQ~n"))
+    ;(s! (format "    serial.start(TX0, ~a)~n" (get-data 'baud)))
+    
+    (s! (format "    CHAN INT ~a:~n" 
+                (apply string-append
+                       (list-intersperse 
+                        (build-wire-names2 (get-working sjson))
+                        ", "))))
+    (s! "    PAR\n")
+    (for-each (λ (str)
+                (s! (format "      ~a~n" str)))
+              proc-headers)
+    (s! ":\n")
+    result
+    ))
 
 (define (file->string fname)
   (define ip (open-input-file fname))

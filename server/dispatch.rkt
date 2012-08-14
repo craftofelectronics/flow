@@ -36,10 +36,10 @@
 
 
 (define (log-and-run req http-param)
-  (define log-op (open-output-file (app-log) #:exists 'append))
-  (fprintf log-op "~a~n" (current-seconds))
-  (fprintf log-op "~n~a~n" (request-post-data/raw req))
-  (close-output-port log-op)
+  ;(define log-op (open-output-file (app-log) #:exists 'append))
+  ;(fprintf log-op "~a~n" (current-seconds))
+  ;(fprintf log-op "~n~a~n" (request-post-data/raw req))
+  ;(close-output-port log-op)
   (run req (request-post-data/raw req))
   
   (response/xexpr 

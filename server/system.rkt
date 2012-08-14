@@ -218,12 +218,7 @@
             (get-keys)))
 
 (define (run req json)
-  (report 'UPLOAD-TVM " ")
-  (when (zero? (get-data 'tvm-installed))
-    (set-data! 'tvm-installed 1)
-    (install-firmware)
-    )
-  
+ 
   (report 'SHOW-TABLE " ")
   (show-table)
   
@@ -256,6 +251,12 @@
   (when-file (hex-file)
              (report 'UPLOADING " ")
              (avrdude))
+  
+  (when (zero? (get-data 'tvm-installed))
+    (report 'UPLOAD-TVM " ")
+    (set-data! 'tvm-installed 1)
+    (install-firmware)
+    )
   )
 
 

@@ -11,13 +11,17 @@
                         ("flow.js"             . 100)
                         ("simple.js"           . 100)
                         ))
+      
       (update-paths . #hash(("server.rkt"      . "config")
                             ("arduino.rkt"     . "config")
                             ("arduinouno.rkt"  . "config")
-                            ("blocksets.rkt"   . "config")
+                            
                             ("flow.module"     . "occam/flow")
                             ("flow.js"         . "interface/blocks")
+                            
+                            ("simple.module"     . "occam/flow")
                             ("simple.js"       . "interface/blocks")
+                            
                             ))
       (blocksets 
        . #hash(("Flow"   . #hash(("filename"    . "flow.js")

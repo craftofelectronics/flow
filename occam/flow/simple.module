@@ -1,0 +1,35 @@
+#INCLUDE "plumbing.module"
+
+VAL INT READ.DELAY IS 10:
+
+PROC ReadSensor (VAL INT pin, CHAN INT out!)
+  INITIAL INT avr.pin IS board.analog.to.chip(pin):
+  WHILE TRUE
+    INT reading:
+    SEQ
+      delay(READ.DELAY)
+      adc.base(avr.pin, VCC, reading)
+      out ! (reading / 11)
+:
+
+PROC Fade (VAL INT pin, CHAN INT in?)
+  CHAN BYTE lvl:
+  SEQ
+    digital.mode (pin, OUTPUT)
+    PAR
+      pwm (pin, lvl?)
+      INITIAL INT prev IS 0:
+      INT value:
+      WHILE TRUE
+        SEQ
+          in ? value
+          IF 
+            value <> prev
+              SEQ
+                prev := value
+                -- serial.write.int (TX0, ((value * 25) / 10))
+                -- serial.write.newline (TX0)
+            TRUE
+              SKIP
+          lvl ! (BYTE ((value * 25) / 10))
+:
