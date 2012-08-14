@@ -32,6 +32,9 @@ cp -R ../bin/macosx/ ${FLOWAPPCONTENTS}/bin/macosx/
 cp -R ../config/ ${FLOWAPPCONTENTS}/config/
 cp -R ../interface/ ${FLOWAPPCONTENTS}/interface/
 cp -R ../occam/ ${FLOWAPPCONTENTS}/occam/
+# This eliminates "file not found" errors for PLT Racket
+mkdir -p ${FLOWAPPCONTENTS}/conf
+touch ${FLOWAPPCONTENTS}/conf/not-found.html
 mkdir -p ${FLOWAPPCONTENTS}/temp
 
 say -v Victoria "Done copying."

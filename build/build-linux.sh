@@ -21,6 +21,11 @@ sleep 2
 cp -R ../occam/ ${DEST}/occam/
 sleep 2
 mkdir -p ${DEST}/temp
+sleep 2
+# Hopefully eliminating the "not found" errors
+# that happen... for reasons unknown.
+mkdir -p ${DEST}/conf
+touch ${DEST}/conf/not-found.html
 
 pushd ..
 tar cvzf Flow.tgz Flow/
