@@ -10,6 +10,7 @@
          (file "system.rkt")
          (file "paths.rkt")
          (file "params.rkt")
+         (file "debug-state.rkt")
          web-server/dispatch 
          web-server/http
          web-server/servlet-env
@@ -70,12 +71,11 @@
   (set-data! 'server-running true)
   (show-params)
   
-  (serve/servlet dispatch
-                 #:launch-browser? #t
-                 #:extra-files-paths (www-path)
-                 #:server-root-path (UMBRELLA)
-                 #:servlet-path "/"
-                 #:servlet-regexp #rx""))
-
-;                 #:log-file (app-log)))
-
+  (with-handlers ([exn:fail? 
+                   (lambda (e) 'ServeFail)])
+    (serve/servlet dispatch
+                   #:launch-browser? #t
+                   #:extra-files-paths (www-path)
+                   #:server-root-path (UMBRELLA)
+                   #:servlet-path "/"
+                   #:servlet-regexp #rx"")))
