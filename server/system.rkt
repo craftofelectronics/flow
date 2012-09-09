@@ -272,7 +272,11 @@
     ;; Dunno if it should be on all platforms.
     (define cmd 
       (if (windows?)
-        (avrdude-cmd ARDUINO-PORT (path->relative path))
+          (begin
+            ;; Try changing to the directory of the firmware on Windows as well.
+            (current-directory (firmware-path))
+            ;(avrdude-cmd ARDUINO-PORT (path->relative path)))
+            (avrdude-cmd ARDUINO-PORT (get-data 'firmware)))
         (begin
           (current-directory (firmware-path))
           (avrdude-cmd ARDUINO-PORT path))))
