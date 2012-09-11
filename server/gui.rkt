@@ -179,7 +179,8 @@
 
 ;; This should move to config file.
 (define types 
-  '(("Arduino Uno" arduinouno)
+  '(("Freeduino" arduino)
+    ("Arduino Uno" arduinouno)
     ("Arduino Duemillanove" arduino)
     ("Raspberry-Pi (TBA)" raspberry-pi)
     ))

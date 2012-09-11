@@ -52,6 +52,8 @@ say -v Victoria "Done making disk image."
 say -v Victoria "Transferring zeroes and ones into the internets."
 
 if [ "${USER}" == "jadudm" ]; then
-	scp -i ~/.ssh/id_rsa ${BASE}.dmg jadudm@transterpreter.org:/srv/www/org/transterpreter.download/files/flow/
+	if [ -e ${BASE}.dmg ]; then
+		scp -i ~/.ssh/id_rsa ${BASE}.dmg jadudm@transterpreter.org:/srv/www/org/transterpreter.download/files/flow/
+	fi
 fi
 say -v Victoria "I have uploaderized the file."
