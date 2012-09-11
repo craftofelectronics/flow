@@ -39,7 +39,15 @@ mkdir -p ${FLOWAPPCONTENTS}/temp
 
 say -v Victoria "Done copying."
 
+# Remove the DMG if it exists
 rm -rf ${BASE}.dmg
+
+# Unmount the drive, if it is mounted
+if [ -d /Volumes/Flow ]; then
+	hdiutil eject /Volumes/Flow
+	sleep 2
+fi
+
 ./create-dmg/create-dmg \
 	--background ${VOLICON}.png \
 	--icon-size 128 \
@@ -49,11 +57,12 @@ rm -rf ${BASE}.dmg
 
 say -v Victoria "Done making disk image."
 
-say -v Victoria "Transferring zeroes and ones into the internets."
+say -v Victoria "Reticulating splines."
 
 if [ "${USER}" == "jadudm" ]; then
 	if [ -e ${BASE}.dmg ]; then
 		scp -i ~/.ssh/id_rsa ${BASE}.dmg jadudm@transterpreter.org:/srv/www/org/transterpreter.download/files/flow/
+		echo Done with upload.
 	fi
 fi
-say -v Victoria "I have uploaderized the file."
+say -v Victoria "All done."
