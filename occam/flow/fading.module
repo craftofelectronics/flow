@@ -1,0 +1,33 @@
+#INCLUDE "plumbing.module"
+
+VAL INT READ.DELAY IS 100:
+
+PROC SendValues (VAL INT v, CHAN INT out!) 
+  WHILE TRUE
+    SEQ
+      IF 
+        v > 100
+          out ! 100
+        TRUE
+          out ! v
+      delay (READ.DELAY)
+:
+
+PROC Fade (VAL INT pin, CHAN INT in?)
+  CHAN BYTE lvl:
+  SEQ
+    digital.mode (pin, OUTPUT)
+    PAR
+      pwm (pin, lvl?)
+      INITIAL INT prev IS 0:
+      INT value:
+      WHILE TRUE
+        SEQ
+          in ? value
+          IF 
+            value <> prev
+              prev := value
+            TRUE
+              SKIP
+          lvl ! (BYTE ((value * 25) / 10))
+:

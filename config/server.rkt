@@ -3,14 +3,16 @@
       (server-port . 8000)
       (base-url . "http://localhost:8000")
       (remote-url . "https://raw.github.com/craftofelectronics/flow/master")
-      (versions . #hash(("server.rkt"          . 100)
+      (versions . #hash(("server.rkt"          . 101)
                         ("arduino.rkt"         . 100)
                         ("arduinouno.rkt"      . 100)
-                        ("blocksets.rkt"       . 100)
+                        
                         ("flow.module"         . 101)
                         ("flow.js"             . 100)
-                        ("simple.js"           . 100)
-                        ))
+                        
+                        ("fading.module"       . 100)
+                        ("fading.js"           . 100)
+                      ))
       
       (update-paths . #hash(("server.rkt"      . "config")
                             ("arduino.rkt"     . "config")
@@ -19,14 +21,14 @@
                             ("flow.module"     . "occam/flow")
                             ("flow.js"         . "interface/blocks")
                             
-                            ("simple.module"     . "occam/flow")
-                            ("simple.js"       . "interface/blocks")
-                            
+                            ("fading.module"     . "occam/flow")
+                            ("fading.js"         . "interface/blocks")
                             ))
       (blocksets 
-       . #hash(("Flow"   . #hash(("filename"    . "flow.js")
+       . #hash(
+               ("Fading" . #hash(("filename"    . "fading.js")
                                  ("sort"        . 0)))
-               ("Simple" . #hash(("filename"    . "simple.js")
+               ("Flow"   . #hash(("filename"    . "flow.js")
                                  ("sort"        . 10)))
                ))
       
