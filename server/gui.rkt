@@ -131,7 +131,7 @@
                        [parent p]
                        [label i]))
                 ls))))
-  
+
 (define setup-arduino
   (new menu-item%
        [parent setup-menu]
@@ -216,7 +216,7 @@
      h (λ (k v)
          (set! keys (cons (list k
                                 (hash-ref (hash-ref h k) "sort"))
-                                keys))))
+                          keys))))
     (map first (sort keys < #:key second))
     ))
 
@@ -247,11 +247,42 @@
   (set-data!
    'port
    (if (empty? ports)
-     "Arduino Not Found."
-     (list-ref ports (send port get-selection))))
+       "Arduino Not Found."
+       (list-ref ports (send port get-selection))))
   (show-params))
 
 (define server-thread-id 'NoThreadID)
+(define SERIALP 'none)
+(define serial-thread-id 'NoThreadID)
+
+(define serial-f (new frame% 
+                      [label "Messages"]
+                      [width 500]
+                      [height 400]
+                      ))
+(define serial-editor (new text-field% 
+                           [label "Messages"]
+                           [parent serial-f]
+                           [style '(multiple)]))
+
+;; This needs to be handled in the driver...
+ 
+(set-data! 'serial-thread
+           (λ ()
+             (set-data! 'SERIALP 
+                        (open-input-file (build-port (get-data 'port)) #:mode 'binary))
+             
+             (let loop ()
+               (let ([line (read-line (get-data 'SERIALP))]
+                     [txt (send
+                           (send serial-editor get-editor)
+                           get-text)])
+                 (set! txt
+                       (string-append 
+                        txt (format "~a~n" line)))
+                 (send serial-editor set-value txt))
+               (loop))))
+
 (define launch
   (new button%
        [parent hp]
@@ -265,6 +296,10 @@
                      ;; Now launch the server
                      (set! server-thread-id 
                            (thread (λ () (serve))))
+                     
+                     (send serial-f show true)
+                     (set! serial-thread-id
+                           (thread (get-data 'serial-thread)))
                      )))))
 
 (define quit

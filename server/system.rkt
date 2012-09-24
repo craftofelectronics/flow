@@ -9,7 +9,7 @@
          (file "store.rkt")
          (file "bin-to-ihex.rkt"))
 
-(provide run install-firmware)
+(provide run install-firmware build-port)
 
 
 ;; RUNNING COMMANDS
@@ -239,7 +239,13 @@
   (when-file (tce-file)
              (report 'PLINK " ")
              (plink))
-  
+ 
+  ;; Close the serial port.
+  ;; Racket nicely cleans up after us, so we kill the thread
+  ;; and the open serial port goes away.
+  (when (get-data 'serial-thread-id)
+    (kill-thread (get-data 'serial-thread-id)))
+ 
   (when-file (tbc-file)
              (report 'BIN-TO-HEX " ")
              ;(bin2hex)
@@ -251,12 +257,17 @@
   (when-file (hex-file)
              (report 'UPLOADING " ")
              (avrdude))
-  
+ 
   (when (zero? (get-data 'tvm-installed))
     (report 'UPLOAD-TVM " ")
     (set-data! 'tvm-installed 1)
-    (install-firmware)
-    )
+    (install-firmware))
+
+  
+  ;; Open the serial port
+  ;; Actually, launch the listening thread.
+  (set-data! 'serial-thread-id
+             (thread (get-data 'serial-thread)))
   )
 
 

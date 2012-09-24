@@ -1,0 +1,75 @@
+#INCLUDE "plumbing.module"
+
+VAL INT READ.DELAY IS 100:
+
+PROC CountUp (VAL INT start, end, millis, CHAN INT out!)
+  INITIAL INT c IS start:
+  WHILE TRUE
+    SEQ
+      out ! c
+      
+      c := c + 1
+      
+      IF
+        c > end
+          c := start
+        TRUE
+          SKIP
+      digital.write (13, HIGH)
+      delay (millis)
+      digital.write (13, LOW)
+
+:
+      
+PROC PrintValue (CHAN INT in?)
+  SEQ
+    serial.start (0, 9600)
+    WHILE TRUE
+      INT v:
+      SEQ
+        in ? v
+        serial.write.dec.int(TX0, v)
+        serial.write.newline(TX0)
+:
+
+PROC PrintAndPassThrough (CHAN INT in?, out!)
+  SEQ
+    serial.start (0, 9600)
+    WHILE TRUE
+      INT v:
+      SEQ
+        in ? v
+        serial.write.dec.int(TX0, v)
+        serial.write.newline(TX0)
+        out ! v
+:
+
+PROC SendValues (VAL INT v, CHAN INT out!) 
+  WHILE TRUE
+    SEQ
+      IF 
+        v > 100
+          out ! 100
+        TRUE
+          out ! v
+      delay (READ.DELAY)
+:
+
+PROC Fade (VAL INT pin, CHAN INT in?)
+  CHAN BYTE lvl:
+  SEQ
+    digital.mode (pin, OUTPUT)
+    PAR
+      pwm (pin, lvl?)
+      INITIAL INT prev IS 0:
+      INT value:
+      WHILE TRUE
+        SEQ
+          in ? value
+          IF 
+            value <> prev
+              prev := value
+            TRUE
+              SKIP
+          lvl ! (BYTE ((value * 25) / 10))
+:
