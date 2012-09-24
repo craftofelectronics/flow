@@ -5,35 +5,40 @@ rm -rf ${DEST}
 mkdir -p ${DEST}
 
 pushd ${SRC}
+  echo Building the Flow executable.
   raco exe --gui -o ${BASE} gui.rkt
+  echo Sleeping
   sleep 2
+  echo Readying for Distribution
   raco distribute ${DEST} ${BASE}
-	sleep 2
-	chmod 755 ${DEST}/${BASE}
+  echo Sleeping
+  sleep 2
+  echo Setting executable mode.
+  chmod 755 ${DEST}/bin/${BASE}
 popd
  
+echo Moving files around
+sleep 2
 cp -R ../bin/unix/ ${DEST}/bin/unix/
-sleep 2
 cp -R ../config/ ${DEST}/config/
-sleep 2
 cp -R ../interface/ ${DEST}/interface/
-sleep 2
 cp -R ../occam/ ${DEST}/occam/
-sleep 2
 mkdir -p ${DEST}/temp
-sleep 2
 # Hopefully eliminating the "not found" errors
 # that happen... for reasons unknown.
 mkdir -p ${DEST}/conf
 touch ${DEST}/conf/not-found.html
 
+echo Going up one level
 pushd ..
-tar cvzf Flow.tgz Flow/
+  echo Zipping.
+  tar cvzf Flow.tgz Flow/
 
-if [ "${USER}" == "reynoldsm" ]; then
+  echo If the first command line argument was "upload"...
+  if [ "$1" = "upload" ]; then
+        echo Uploading
 	scp -i ~/.ssh/jadudm-rsa ${BASE}.tgz jadudm@transterpreter.org:/srv/www/org/transterpreter.download/files/flow/
-fi
-
+  fi
 popd
 
 

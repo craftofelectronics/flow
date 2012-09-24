@@ -244,7 +244,11 @@
   ;; Racket nicely cleans up after us, so we kill the thread
   ;; and the open serial port goes away.
   (when (get-data 'serial-thread-id)
-    (kill-thread (get-data 'serial-thread-id)))
+    (when (port? (get-data 'SERIALP))
+      (close-input-port (get-data 'SERIALP)))
+    (sleep 1)
+    (kill-thread (get-data 'serial-thread-id))
+    (sleep 1))
  
   (when-file (tbc-file)
              (report 'BIN-TO-HEX " ")

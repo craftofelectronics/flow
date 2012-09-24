@@ -274,6 +274,7 @@
                           (open-input-file (build-port (get-data 'port)) #:mode 'binary))
                
                (let loop ()
+                 (when (port? (get-data 'SERIALP))
                  (let ([line (read-line (get-data 'SERIALP))]
                        [txt (send
                              (send serial-editor get-editor)
@@ -288,7 +289,7 @@
                       (set! c 0)]
                      [else 
                       (send serial-editor set-value txt)])
-                     )
+                     ))
                    
                  (loop))
                )))
@@ -308,8 +309,8 @@
                            (thread (λ () (serve))))
                      
                      (send serial-f show true)
-                     (set! serial-thread-id
-                           (thread (get-data 'serial-thread)))
+                     ;; (set! serial-thread-id
+                     ;;      (thread (get-data 'serial-thread)))
                      )))))
 
 (define quit
