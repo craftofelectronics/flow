@@ -30,8 +30,8 @@
                                  ("sort"        . 0)))
                ("Flow"   . #hash(("filename"    . "flow.js")
                                  ("sort"        . 10)))
-               ("Counting"   . #hash(("filename"    . "counting.js")
-                                 ("sort"        . 20)))                            
+               ("Sensing Light"   . #hash(("filename"    . "sensing-light.js")
+                                 ("sort"        . 20)))          
                ))
       
       (update-urls . #hash(("occam/flow" .

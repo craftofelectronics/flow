@@ -269,19 +269,29 @@
  
 (set-data! 'serial-thread
            (λ ()
-             (set-data! 'SERIALP 
-                        (open-input-file (build-port (get-data 'port)) #:mode 'binary))
-             
-             (let loop ()
-               (let ([line (read-line (get-data 'SERIALP))]
-                     [txt (send
-                           (send serial-editor get-editor)
-                           get-text)])
-                 (set! txt
-                       (string-append 
-                        txt (format "~a~n" line)))
-                 (send serial-editor set-value txt))
-               (loop))))
+             (let ([c 0])
+               (set-data! 'SERIALP 
+                          (open-input-file (build-port (get-data 'port)) #:mode 'binary))
+               
+               (let loop ()
+                 (let ([line (read-line (get-data 'SERIALP))]
+                       [txt (send
+                             (send serial-editor get-editor)
+                             get-text)])
+                   (set! txt
+                         (string-append 
+                          txt (format "~a~n" line)))
+                   (set! c (add1 c))
+                   (cond
+                     [(> c 100)
+                      (send serial-editor set-value "")
+                      (set! c 0)]
+                     [else 
+                      (send serial-editor set-value txt)])
+                     )
+                   
+                 (loop))
+               )))
 
 (define launch
   (new button%

@@ -2,6 +2,18 @@
 
 VAL INT READ.DELAY IS 100:
 
+PROC ReadSensor (VAL INT pin, CHAN INT out!)
+  INITIAL INT avr.pin IS board.analog.to.chip(pin):
+  WHILE TRUE
+    INT reading:
+    SEQ
+      delay(READ.DELAY)
+      adc.base(avr.pin, VCC, reading)
+      -- Keep it in the range 0 .. 100
+      -- 1023 / 11 == 93
+      out ! (reading / 11)
+:
+
 PROC CountUp (VAL INT start, end, millis, CHAN INT out!)
   INITIAL INT c IS start:
   WHILE TRUE
