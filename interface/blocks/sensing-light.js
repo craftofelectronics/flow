@@ -32,6 +32,43 @@ var blocks = {
       "legend": "Reads a sensor attached to the named pin and outputs a reading."
 	   	}
 	   },
+	   
+	   {
+	     "name": "On Above Threshold",
+	     "container": {
+	       "xtype": "WireIt.FormContainer",
+	       "title": "onabovethreshold",    
+	       "icon": "images/tvm.png",
+	       "collapsible": true,
+	       "fields": [ 
+           {"inputParams": {"label": "Threshold", "name": "0int", "value":"50", "required": true } }, 
+
+	       ],
+	       "terminals": [
+           {"name": "1in", "direction": [0,-1], "offsetPosition": {"left": 100, "top": -15 }},
+		   
+	       {"name": "2out", "direction": [0,1], "offsetPosition": {"left": 100, "bottom": -15}}
+	         ],
+	       "legend": "Turns on when the value read is above the threshold given."
+	 	   	}
+	 	   },
+		   {
+		     "name": "Inverter",
+		     "container": {
+		       "xtype": "WireIt.FormContainer",
+		       "title": "offbelowthreshold",    
+		       "icon": "images/tvm.png",
+		       "collapsible": true,
+		       "fields": [
+		       ],
+		       "terminals": [
+	           {"name": "0in", "direction": [0,-1], "offsetPosition": {"left": 100, "top": -15 }},
+			   
+		       {"name": "1out", "direction": [0,1], "offsetPosition": {"left": 100, "bottom": -15}}
+		         ],
+		       "legend": "Turns an 'on' value into an 'off' value, and visa versa."
+		 	   	}
+		 	   },
      {
        "name": "Print Value",
        "container": {

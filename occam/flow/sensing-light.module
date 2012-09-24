@@ -1,6 +1,30 @@
 #INCLUDE "plumbing.module"
 
-VAL INT READ.DELAY IS 100:
+VAL INT READ.DELAY IS 200:
+
+PROC OnAboveThreshold (VAL INT thresh, CHAN INT in?, out!)
+  WHILE TRUE
+    INT v:
+    SEQ
+      in ? v
+      IF
+        v > thresh
+          out ! 100
+        TRUE
+          out ! 0
+:
+	
+PROC Inverter (CHAN INT in?, out!)
+  WHILE TRUE
+    INT v:
+    SEQ
+      in ? v
+      IF
+        v = 0
+          out ! 100
+        TRUE
+          out ! 0
+:
 
 PROC ReadSensor (VAL INT pin, CHAN INT out!)
   INITIAL INT avr.pin IS board.analog.to.chip(pin):
