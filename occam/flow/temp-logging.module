@@ -146,7 +146,7 @@ PROC TempLogger (VAL INT every.n.min, start.hour, start.min)
           serial.write.dec.int (TX0, m)
           serial.write.comma (TX0)
           show.temp ()
-          crnl()
+          serial.write.newline (TX0)
 :
 
 PROC temp.logging.main ()
