@@ -22,7 +22,6 @@ PROC show.temp ()
     value := value / 0.02
     reading := (INT TRUNC value)
     serial.write.dec.int (TX0, reading)
-    serial.write.newline (TX0)
 :
 
 INLINE PROC serial.write.comma (VAL INT port)
@@ -146,7 +145,7 @@ PROC TempLogger (VAL INT every.n.min, start.hour, start.min)
           serial.write.dec.int (TX0, m)
           serial.write.comma (TX0)
           show.temp ()
-          serial.write.newline (TX0)
+          crnl()
 :
 
 PROC temp.logging.main ()
