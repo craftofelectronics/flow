@@ -12,7 +12,14 @@
                         
                         ("fading.module"       . 100)
                         ("fading.js"           . 100)
-                      ))
+                        
+                        ("sensing-light.module"       . 100)
+                        ("sensing-light.js"           . 100)
+                        
+                        ("temp-logging.module"       . 100)
+                        ("temp-logging.js"           . 100)
+                        
+                        ))
       
       (update-paths . #hash(("server.rkt"      . "config")
                             ("arduino.rkt"     . "config")
@@ -23,6 +30,12 @@
                             
                             ("fading.module"     . "occam/flow")
                             ("fading.js"         . "interface/blocks")
+                            
+                            ("sensing-light.module"     . "occam/flow")
+                            ("sensing-light.js"         . "interface/blocks")
+                            
+                            ("temp-logging.module"     . "occam/flow")
+                            ("temp-logging.js"         . "interface/blocks")
                             ))
       (blocksets 
        . #hash(
@@ -31,16 +44,18 @@
                ("Flow"   . #hash(("filename"    . "flow.js")
                                  ("sort"        . 10)))
                ("Sensing Light"   . #hash(("filename"    . "sensing-light.js")
-                                 ("sort"        . 20)))          
+                                          ("sort"        . 20)))
+               ("Logging Temperature"   . #hash(("filename"    . "temp-logging.js")
+                                                ("sort"        . 30)))
                ))
       
       (update-urls . #hash(("occam/flow" .
-                            "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
+                                         "https://raw.github.com/craftofelectronics/flow/master/occam/flow/")
                            ("interface/blocks" .
-                            "https://raw.github.com/craftofelectronics/flow/master/interface/blocks/")
+                                               "https://raw.github.com/craftofelectronics/flow/master/interface/blocks/")
                            ("config" .
-                            "https://raw.github.com/craftofelectronics/flow/master/config/")))
+                                     "https://raw.github.com/craftofelectronics/flow/master/config/")))
       
       (max-windows-com-port . 15)
       )
-        
+

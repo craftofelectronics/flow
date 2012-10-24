@@ -1,0 +1,156 @@
+#INCLUDE "plumbing.module"
+
+VAL INT SECONDS IS 1000:
+
+-- Change this value to 10 if you
+-- want to accelerate the testing.
+-- It lets you pretend that a second
+-- is only 10ms long, then.
+VAL INT MS.PER.SECOND IS 1000:
+
+
+PROC show.temp ()
+  INT reading:
+  REAL32 value:
+  -- volts = sensorValue * 5.0 / 1024.0;
+  -- celsius = (sensorValue * 5.0 / 1024.0) / voltsPerDegree;
+  INITIAL INT ANALOG IS board.to.chip (A0):
+  SEQ
+    adc.base (ANALOG, VCC, reading)
+    value := (REAL32 TRUNC reading)
+    value := (value * 5.0) / 1024.0
+    value := value / 0.02
+    reading := (INT TRUNC value)
+    serial.write.dec.int (TX0, reading)
+    serial.write.newline (TX0)
+:
+
+INLINE PROC serial.write.comma (VAL INT port)
+  serial.write.string (port, ",")
+:
+
+INLINE PROC crnl ()
+  SEQ
+    serial.write.byte (TX0, #0D)
+    serial.write.byte (TX0, #0A)
+:
+
+PROC openlog.flush ()
+  SEQ
+    SEQ i = 0 FOR 3
+      serial.write.byte (TX0, #1A)
+    serial.write.string (TX0, "sync")
+    crnl ()
+:
+
+PROC show.ctr (INT ctr)
+  SEQ
+    serial.write.dec.int (TX0, ctr)
+    serial.write.string (TX0, ",")
+    ctr := (ctr + 1) REM 100
+:
+
+PROC delay.s (VAL INT seconds, CHAN INT out!)
+  INITIAL INT c IS seconds:
+  WHILE TRUE
+    SEQ
+      delay (MS.PER.SECOND)
+      IF
+        -- If we counted down to zero, then
+        -- output a ping, and reset the counter.
+        c <= 0
+          SEQ
+            out ! 1
+            c := seconds
+        -- Otherwise, countdown.
+        TRUE
+          c := c - 1
+:
+
+PROC delay.m (VAL INT min, CHAN INT out!)
+  CHAN INT tick:
+  PAR
+    delay.s (60, tick!)
+    INITIAL INT c IS min:
+    WHILE TRUE
+      SEQ
+        INT dummy:
+        tick ? dummy
+        IF
+          c <= 0
+            SEQ
+              out ! 1
+              c := min
+          TRUE
+            c := c - 1
+:
+
+PROC delay.h (VAL INT hours, CHAN INT out!)
+  CHAN INT tick:
+  PAR
+    delay.m (60, tick!)
+    INITIAL INT c IS hours:
+    WHILE TRUE
+      SEQ
+        INT dummy:
+        tick ? dummy
+        IF
+          c <= 0
+            SEQ
+              out ! 1
+              c := hours
+          TRUE
+            c := c - 1
+:
+
+PROC TempLogger (VAL INT every.n.min, start.hour, start.min)
+  SEQ
+    serial.setup (TX0, 9600)
+    delay (3 * SECONDS)
+    CHAN INT tick:
+    PAR
+      delay.m (every.n.min, tick!)
+      INITIAL INT h IS start.hour:
+      INITIAL INT m IS start.min:
+      -- The students will be wigged 
+      -- out if I start the days at zero
+      INITIAL INT d IS 1:
+      WHILE TRUE
+        SEQ
+          INT dummy:
+          tick ? dummy
+          -- This whole time thing could be done
+          -- in a pretty little parallel network.
+          -- However, I'm in a hurry.
+          -- UPDATE THE TIME
+          m := m + every.n.min
+          IF
+            m >= 60
+              SEQ
+                m := m REM 60
+                IF 
+                  -- UPDATE THE DAYS. ALWAYS START AT 1.
+                  ((h + 1) REM 24) = 0
+                    d := d + 1
+                  TRUE
+                    SKIP
+                h := (h + 1) REM 24
+            TRUE
+              SKIP
+          -- RECORD THE VALUES
+          serial.write.dec.int (TX0, d)
+          serial.write.comma (TX0)
+          serial.write.dec.int (TX0, h)
+          serial.write.comma (TX0)
+          serial.write.dec.int (TX0, m)
+          serial.write.comma (TX0)
+          show.temp ()
+          crnl()
+:
+
+PROC temp.logging.main ()
+  PAR
+    heartbeat ()
+    TempLogger (5, 9, 19)
+:
+
