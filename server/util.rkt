@@ -13,6 +13,7 @@
 ;; Intersperses the object 'o' throughout the list.
 (define (list-intersperse ls o)
   (cond
+    [(empty? ls) ls]
     [(empty? (rest ls)) ls]
     [else
      (cons (first ls)

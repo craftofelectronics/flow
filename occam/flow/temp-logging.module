@@ -109,6 +109,7 @@ PROC TempLogger (VAL INT every.n.min, start.hour, start.min)
     delay (3 * SECONDS)
     CHAN INT tick:
     PAR
+      heartbeat ()
       delay.m (every.n.min, tick!)
       INITIAL INT h IS start.hour:
       INITIAL INT m IS start.min:

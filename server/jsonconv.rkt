@@ -27,6 +27,11 @@
 (define p2
   "{\"diagram\":{\"name\":\"\",\"project\":\"\",\"working\":{\"modules\":[{\"name\":\"Read Sensor\",\"value\":{\"0int\":\"A0\"},\"config\":{\"position\":[121,38]}},{\"name\":\"Fade\",\"value\":{\"0int\":\"3\"},\"config\":{\"position\":[147,227]}}],\"wires\":[{\"src\":{\"moduleId\":0,\"terminal\":\"1out\"},\"tgt\":{\"moduleId\":1,\"terminal\":\"1in\"}}],\"properties\":{\"name\":\"\",\"project\":\"\",\"description\":\"\"}}},\"username\":\"\",\"project\":\"\",\"storage_key\":\"_\"}:")
 
+;; Handles one-block programs.
+(define p3
+  "{\"diagram\":{\"name\":\"\",\"project\":\"\",\"working\":{\"modules\":[],\"wires\":[],\"properties\":{\"name\":\"\",\"project\":\"\",\"description\":\"\"}}},\"username\":\"\",\"project\":\"\",\"storage_key\":\"_\"}")
+
+
 (define-syntax (get stx)
   (syntax-case stx ()
     [(_ json field)
@@ -331,7 +336,10 @@
 
 (define (get-library-name)
   (let* ([bsf (get-data 'block-set-file)]
-         [module-name (regexp-replace ".js$" bsf "")])
+         [module-name 
+          (if (not bsf)
+              "OFFLINE-TEST"
+              (regexp-replace ".js$" bsf ""))])
     (debug (format "Module name: ~a~n" module-name))
     module-name))
 
@@ -347,8 +355,8 @@
     (define result "")
     (define (s! s)
       (set! result (string-append result s)))
-    (define booger 
-      (debug (format "ERROR JSON~n===~a~n===~n" prog)))
+    (define just-for-debug 
+      (debug (format "DEBUG JSON~n===~a~n===~n" prog)))
     
     (define sjson      (json->sjson prog))
     (define names      (map get-name (get-modules (get-working sjson))))
@@ -370,15 +378,20 @@
     (s! (format "  SEQ~n"))
     ;(s! (format "    serial.start(TX0, ~a)~n" (get-data 'baud)))
     
-    (s! (format "    CHAN INT ~a:~n" 
-                (apply string-append
-                       (list-intersperse 
+    (let ([channels (list-intersperse 
                         (build-wire-names2 (get-working sjson))
-                        ", "))))
+                        ", ")])
+      (when (not (empty? channels))
+        (s! (format "    CHAN INT ~a:~n" 
+                    (apply string-append channels )))))
+    
     (s! "    PAR\n")
     (for-each (λ (str)
                 (s! (format "      ~a~n" str)))
               proc-headers)
+    ;; Always throw this in. If proc-headers is 
+    ;; empty, we have one process in the PAR.
+    (s! (format "      SKIP~n"))
     (s! ":\n")
     result
     ))
