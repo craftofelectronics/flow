@@ -16,7 +16,7 @@
                         ("sensing-light.module"       . 100)
                         ("sensing-light.js"           . 100)
                         
-                        ("temp-logging.module"       . 100)
+                        ("temp-logging.module"       . 101)
                         ("temp-logging.js"           . 100)
                         
                         ))
